@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { useProgress } from "@react-three/drei";
-import { Scene } from "@/components/Scene";
+import { ClientScene } from "@/components/ClientScene";
 import { SkyBackground } from "@/components/SkyBackground";
-import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { ContactButton } from "@/components/ContactButton";
 import { MenuButton } from "@/components/MenuButton";
 import { ContactSection } from "@/components/ContactSection";
@@ -145,26 +143,17 @@ function IntroOverlay() {
   );
 }
 function Index() {
-  const { progress, active } = useProgress();
   const [sceneReady, setSceneReady] = useState(false);
-
-  useEffect(() => {
-    if (!active && progress >= 100) {
-      // Wait for the loading overlay fade-out before mounting the rest
-      const t = setTimeout(() => setSceneReady(true), 800);
-      return () => clearTimeout(t);
-    }
-  }, [active, progress]);
 
   return (
     <>
       <SkyBackground />
-      <LoadingOverlay />
 
       <main className="fixed inset-0">
         <h1 className="sr-only">L'Antilope volante</h1>
-        <Scene />
+        <ClientScene onReady={setSceneReady} />
       </main>
+
       <IntroOverlay />
       <ContactButton />
       <MenuButton />
