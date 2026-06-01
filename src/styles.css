@@ -745,6 +745,24 @@
 }
 
 @media (max-width: 768px) {
+  .project-section {
+    padding: 5rem 5vw 4rem;
+    gap: 2.5rem;
+  }
+  .project-heading {
+    position: static;
+    top: auto;
+    gap: 1.25rem;
+    justify-content: center;
+  }
+  .project-label {
+    font-size: clamp(1.75rem, 8vw, 3rem);
+  }
+  .project-number-circle {
+    width: clamp(5rem, 18vw, 8rem);
+    height: clamp(5rem, 18vw, 8rem);
+    font-size: clamp(2.5rem, 11vw, 5rem);
+  }
   .project-stacked {
     flex-direction: column;
   }
