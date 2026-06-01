@@ -23,12 +23,44 @@ export function ContactSection() {
     if (!section || !video) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // iOS Safari requires these to be set programmatically too for reliable autoplay
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+
+    let playToken = 0;
+
+    const safePlay = async () => {
+      const token = ++playToken;
+      try {
+        // Pause before seeking — iOS rejects play() if a seek is mid-flight
+        video.pause();
+        try {
+          video.currentTime = 0;
+        } catch {
+          // Some iOS versions throw if metadata isn't ready yet
+        }
+        // If the video element got into a stuck state, force a reload
+        if (video.readyState < 2 || video.error) {
+          try { video.load(); } catch { /* noop */ }
+        }
+        if (token !== playToken) return;
+        await video.play();
+      } catch {
+        // Retry once on next frame — iOS sometimes rejects the first play()
+        requestAnimationFrame(() => {
+          if (token !== playToken) return;
+          video.play().catch(() => {});
+        });
+      }
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
-            video.currentTime = 0;
-            video.play().catch(() => {});
+            safePlay();
           }
         }
       },
@@ -36,7 +68,21 @@ export function ContactSection() {
     );
 
     observer.observe(section);
-    return () => observer.disconnect();
+
+    // Recover if the tab/page was backgrounded mid-play (common iOS stall)
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      const rect = section.getBoundingClientRect();
+      const inView =
+        rect.top < window.innerHeight * 0.75 && rect.bottom > window.innerHeight * 0.25;
+      if (inView) safePlay();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   return (
