@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ClientScene } from "@/components/ClientScene";
 import { SkyBackground } from "@/components/SkyBackground";
 import { ContactButton } from "@/components/ContactButton";
@@ -40,7 +40,7 @@ function TextCarousel({ visible }: { visible: boolean }) {
     if (!show) return;
     const interval = setInterval(() => {
       setIndex((i) => (i + 1) % slides.length);
-    }, 3500);
+    }, 6000);
     return () => clearInterval(interval);
   }, [show]);
 
@@ -90,55 +90,47 @@ function TextCarousel({ visible }: { visible: boolean }) {
 }
 
 function IntroOverlay() {
-  const [overlayOpacity, setOverlayOpacity] = useState(1);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => {
-      const animationRange = Math.max(1, window.innerHeight * 3);
-      // Fade out starts at 70% of the animation range, fully transparent at 100%
-      const fadeStart = animationRange * 0.7;
-      const fadeEnd = animationRange;
-      const scrollY = window.scrollY;
+    const el = overlayRef.current;
+    if (!el) return;
 
-      if (scrollY <= fadeStart) {
-        setOverlayOpacity(1);
-      } else if (scrollY >= fadeEnd) {
-        setOverlayOpacity(0);
-      } else {
-        const progress = (scrollY - fadeStart) / (fadeEnd - fadeStart);
-        setOverlayOpacity(1 - progress);
-      }
+    let rafId: number;
+    let current = 0;
+    let target = 0;
+
+    const onScroll = () => {
+      // 0 → 1 over the first 1.5 viewports of scroll
+      const p = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 1.5)));
+      target = p;
+    };
+
+    const tick = () => {
+      current += (target - current) * 0.1;
+      // Light effects: slight lift, slight scale, gentle fade near the end
+      const ty = -current * 24; // px
+      const scale = 1 - current * 0.04;
+      const opacity = 1 - Math.pow(current, 2) * 0.35;
+      el.style.transform = `translate3d(0, ${ty}px, 0) scale(${scale})`;
+      el.style.opacity = String(opacity);
+      rafId = requestAnimationFrame(tick);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    rafId = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
-  const hidden = overlayOpacity < 0.02;
-
   return (
-    <div
-      className="intro-overlay"
-      style={{
-        opacity: overlayOpacity,
-        transition: "opacity 0.15s linear",
-        pointerEvents: hidden ? "none" : "none",
-      }}
-    >
-      <p
-        className="intro-subtitle"
-        style={{ opacity: hidden ? 0 : undefined }}
-      >
-        David Lelièvre vous présente
-      </p>
-      <h1
-        className="intro-title"
-        style={{ opacity: hidden ? 0 : undefined }}
-      >
-        L'Antilope volante
-      </h1>
-      <TextCarousel visible={!hidden} />
+    <div ref={overlayRef} className="intro-overlay" style={{ willChange: 'transform, opacity' }}>
+      <p className="intro-subtitle">David Lelièvre vous présente</p>
+      <h1 className="intro-title">L'Antilope volante</h1>
+      <TextCarousel visible={true} />
     </div>
   );
 }
@@ -154,11 +146,12 @@ function Index() {
         <ClientScene onReady={setSceneReady} />
       </main>
 
-      <IntroOverlay />
+      {/* Sticky intro lives inside the spacer so it releases when project sections start */}
+      <div className="relative h-[300vh]">
+        <IntroOverlay />
+      </div>
       <ContactButton />
       <MenuButton />
-      {/* Tall spacer to drive the camera animation (gazelle rotation) */}
-      <div className="h-[300vh]" />
 
       {/* Defer the rest of the page until the 3D scene + header are ready */}
       {sceneReady && (

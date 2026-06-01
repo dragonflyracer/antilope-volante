@@ -35,7 +35,7 @@ export function LoadingOverlay() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background transition-opacity duration-700"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-transparent transition-opacity duration-700"
       style={{ opacity: done ? 0 : 1, pointerEvents: done ? "none" : "auto" }}
       aria-busy={!done}
       aria-live="polite"

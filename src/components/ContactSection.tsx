@@ -64,7 +64,7 @@ export function ContactSection() {
                 fill="none"
               />
             </defs>
-            <text fill="#fff" stroke="#000000" strokeWidth="0.8" paintOrder="stroke fill" fontFamily="Raleway, sans-serif" fontWeight="100" fontSize="24" letterSpacing="0.04em">
+            <text fill="#ffffff" fontFamily="Raleway, sans-serif" fontWeight="100" fontSize="24" letterSpacing="0.04em">
               <textPath href="#sloganCurve" startOffset="50%" textAnchor="middle">
                 Attrapons votre idée avant qu'elle ne s'enfuie
               </textPath>
