@@ -45,7 +45,7 @@ export function ProjectSection({
               <iframe
                 src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&playsinline=1&loop=1&controls=0&autoplay=1&mute=1&playlist=${youtubeId}`}
                 title={title}
-                loading="lazy"
+                loading="eager"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 style={{
