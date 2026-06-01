@@ -21,9 +21,9 @@ export const Route = createFileRoute("/")({
 });
 
 const slides = [
-  { text: "Mon univers du UX", hasArrow: false },
+  { text: "Mon univers du UX", hasArrow: true },
   { text: "Défiler pour découvrir", hasArrow: true },
-  { text: "Défiler sur le web avec la facilité d'une gazelle", hasArrow: false },
+  { text: "Défiler sur le web avec la facilité d'une gazelle", hasArrow: true },
 ];
 
 function TextCarousel({ visible }: { visible: boolean }) {
@@ -96,33 +96,34 @@ function IntroOverlay() {
     const el = overlayRef.current;
     if (!el) return;
 
-    let rafId: number;
-    let current = 0;
-    let target = 0;
+    let rafId: number | null = null;
+    let scrollY = window.scrollY;
 
-    const onScroll = () => {
-      // 0 → 1 over the first 1.5 viewports of scroll
-      const p = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 1.5)));
-      target = p;
-    };
-
-    const tick = () => {
-      current += (target - current) * 0.1;
-      // Light effects: slight lift, slight scale, gentle fade near the end
-      const ty = -current * 24; // px
-      const scale = 1 - current * 0.04;
-      const opacity = 1 - Math.pow(current, 2) * 0.35;
+    const apply = () => {
+      rafId = null;
+      const vh = window.innerHeight;
+      // Real parallax: overlay translates up at 0.1x scroll speed
+      const ty = -scrollY * 0.1;
+      // Fade completes just before the Project section (spacer = 300vh)
+      const p = Math.min(1, Math.max(0, scrollY / (vh * 2.8)));
+      const scale = 1 - p * 0.08;
+      const opacity = 1 - Math.pow(p, 2.5);
       el.style.transform = `translate3d(0, ${ty}px, 0) scale(${scale})`;
       el.style.opacity = String(opacity);
-      rafId = requestAnimationFrame(tick);
     };
 
+    const onScroll = () => {
+      scrollY = window.scrollY;
+      if (rafId === null) rafId = requestAnimationFrame(apply);
+    };
+
+    apply();
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    rafId = requestAnimationFrame(tick);
+    window.addEventListener("resize", onScroll);
     return () => {
-      cancelAnimationFrame(rafId);
+      if (rafId !== null) cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, []);
 

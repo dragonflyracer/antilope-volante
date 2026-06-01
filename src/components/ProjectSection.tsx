@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 interface ProjectSectionProps {
   number: string;
@@ -17,6 +17,13 @@ export function ProjectSection({
   imageUrl,
   youtubeId,
 }: ProjectSectionProps) {
+  const [ytBlurred, setYtBlurred] = useState(true);
+  useEffect(() => {
+    if (!youtubeId) return;
+    const t = setTimeout(() => setYtBlurred(false), 3000);
+    return () => clearTimeout(t);
+  }, [youtubeId]);
+
   return (
     <section id={`projet-${number}`} className="project-section">
 
@@ -41,7 +48,12 @@ export function ProjectSection({
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
+                style={{
+                  filter: ytBlurred ? 'blur(24px)' : 'none',
+                  transition: 'filter 600ms ease-out',
+                }}
               />
+
             </div>
           </div>
         </div>

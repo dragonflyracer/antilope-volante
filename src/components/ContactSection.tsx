@@ -6,7 +6,6 @@ export function ContactSection() {
   const [copied, setCopied] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const hasPlayedRef = useRef(false);
 
   const handleCopyEmail = async () => {
     try {
@@ -26,17 +25,16 @@ export function ContactSection() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasPlayedRef.current) {
-            hasPlayedRef.current = true;
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
             video.currentTime = 0;
             video.play().catch(() => {});
-            observer.disconnect();
           }
-        });
+        }
       },
       { threshold: 0.25 }
     );
+
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
