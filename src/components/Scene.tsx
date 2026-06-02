@@ -4,6 +4,7 @@ import { Environment } from "@react-three/drei";
 import { EffectComposer, DepthOfField, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { Model } from "./Model";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 
 // Loading state is now handled outside the Canvas via <LoadingOverlay />.
@@ -63,30 +64,32 @@ function ScrollCamera() {
  * - Lightweight HDRI environment for realistic reflections / lighting
  */
 export function Scene() {
+  const isMobile = useIsMobile();
   return (
     <Canvas
       camera={{ position: [Math.sin((25 * Math.PI) / 180) * 3.0, 0.75, Math.cos((25 * Math.PI) / 180) * 3.0], fov: 42 }}
 
-      dpr={[1, 2]}
-      shadows
+      dpr={isMobile ? [1, 1.5] : [1, 2]}
+      shadows={!isMobile}
       flat={false}
       gl={{
-        antialias: true,
+        antialias: !isMobile,
         alpha: true,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1.0,
         outputColorSpace: THREE.SRGBColorSpace,
+        powerPreference: "high-performance",
       }}
       className="!fixed inset-0 !h-screen !w-screen"
     >
       <ScrollCamera />
 
       {/* Subtle fill so shadowed areas keep some detail without washing PBR out */}
-      <ambientLight intensity={0.15} />
+      <ambientLight intensity={isMobile ? 0.35 : 0.15} />
       <directionalLight
         position={[5, 5, 5]}
         intensity={2.0}
-        castShadow
+        castShadow={!isMobile}
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
@@ -97,22 +100,24 @@ export function Scene() {
         <Environment preset="city" />
         <Model url="/models/model.glb" scale={1} />
 
-        {/* Cinematic post-processing: gentle DoF, soft bloom and a touch of vignette */}
-        <EffectComposer multisampling={4}>
-          <DepthOfField
-            focusDistance={0.012}
-            focalLength={0.025}
-            bokehScale={3}
-            height={720}
-          />
-          <Bloom
-            intensity={0.25}
-            luminanceThreshold={0.85}
-            luminanceSmoothing={0.2}
-            mipmapBlur
-          />
-          <Vignette eskil={false} offset={0.2} darkness={0.6} />
-        </EffectComposer>
+        {/* Cinematic post-processing — desktop only (très coûteux sur GPU mobile) */}
+        {!isMobile && (
+          <EffectComposer multisampling={4}>
+            <DepthOfField
+              focusDistance={0.012}
+              focalLength={0.025}
+              bokehScale={3}
+              height={720}
+            />
+            <Bloom
+              intensity={0.25}
+              luminanceThreshold={0.85}
+              luminanceSmoothing={0.2}
+              mipmapBlur
+            />
+            <Vignette eskil={false} offset={0.2} darkness={0.6} />
+          </EffectComposer>
+        )}
       </Suspense>
 
     </Canvas>
