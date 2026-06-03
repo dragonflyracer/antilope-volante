@@ -13,6 +13,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export function SkyBackground() {
   const ref = useRef<HTMLDivElement | null>(null);
   const isMobile = useIsMobile();
+  const lowPowerDevice =
+    typeof navigator !== "undefined" &&
+    navigator.hardwareConcurrency <= 4;
+    
+  const disableBlur = isMobile || lowPowerDevice;
 
   useEffect(() => {
     let raf = 0;
@@ -60,7 +65,7 @@ export function SkyBackground() {
         backgroundSize: "auto 120%",
         willChange: "background-position",
         // `filter: blur` recomposite chaque frame — trop coûteux sur GPU mobile
-        filter: isMobile ? "saturate(1.05)" : "blur(6px) saturate(1.05)",
+        filter: disableBlur ? "saturate(1.05)" : "blur(3px) saturate(1.05)",
         transform: "scale(1.06)",
       }}
     />
