@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import background from "@/assets/background.png";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -12,12 +12,20 @@ import { useIsMobile } from "@/hooks/use-mobile";
  */
 export function SkyBackground() {
   const ref = useRef<HTMLDivElement | null>(null);
+
   const isMobile = useIsMobile();
-  const lowPowerDevice =
-    typeof navigator !== "undefined" &&
-    navigator.hardwareConcurrency <= 4;
-    
+
+  const [lowPowerDevice, setLowPowerDevice] = useState(false);
+
   const disableBlur = isMobile || lowPowerDevice;
+
+  useEffect(() => {
+  if (typeof navigator !== "undefined") {
+    setLowPowerDevice(
+      navigator.hardwareConcurrency <= 4
+    );
+  }
+}, []);
 
   useEffect(() => {
     let raf = 0;
