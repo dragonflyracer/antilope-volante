@@ -6,6 +6,9 @@ export function ContactSection() {
   const [copied, setCopied] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
   const handleCopyEmail = async () => {
     try {
@@ -37,7 +40,7 @@ export function ContactSection() {
         // Pause before seeking — iOS rejects play() if a seek is mid-flight
         video.pause();
         try {
-          video.currentTime = 0;
+          video.currentTime = isIOS ? 0.05 : 0;
         } catch {
           // Some iOS versions throw if metadata isn't ready yet
         }
