@@ -1,6 +1,6 @@
 import { Copy, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import powderBurst from "@/assets/powder-burst.webm";
+import powderBurst from "@/assets/powder-burst.mp4";
 
 export function ContactSection() {
   const [copied, setCopied] = useState(false);
