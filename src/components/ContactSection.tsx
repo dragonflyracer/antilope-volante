@@ -38,6 +38,7 @@ export function ContactSection() {
       const token = ++playToken;
       try {
         // Pause before seeking — iOS rejects play() if a seek is mid-flight
+        if (!video.paused) return;
         video.pause();
         try {
           video.currentTime = isIOS ? 0.05 : 0;
