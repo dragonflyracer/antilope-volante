@@ -45,7 +45,7 @@ export function ContactSection() {
           // Some iOS versions throw if metadata isn't ready yet
         }
         // If the video element got into a stuck state, force a reload
-        if (video.readyState < 2 || video.error) {
+        if (video.error) {
           try { video.load(); } catch { /* noop */ }
         }
         if (token !== playToken) return;
