@@ -109,12 +109,6 @@ export function Scene() {
               bokehScale={3}
               height={720}
             />
-            <Bloom
-              intensity={0.25}
-              luminanceThreshold={0.85}
-              luminanceSmoothing={0.2}
-              mipmapBlur
-            />
             <Vignette eskil={false} offset={0.2} darkness={0.6} />
           </EffectComposer>
         )}
