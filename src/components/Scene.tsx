@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Environment } from "@react-three/drei";
-import { EffectComposer, DepthOfField, Bloom, Vignette } from "@react-three/postprocessing";
+import { EffectComposer, DepthOfField, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { Model } from "./Model";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -64,7 +64,18 @@ function ScrollCamera() {
  * - Lightweight HDRI environment for realistic reflections / lighting
  */
 export function Scene() {
-  const isMobile = useIsMobile();
+ const isMobile = useIsMobile();
+ const [lowPowerDevice, setLowPowerDevice] = useState(false);
+ const disablePostFX = isMobile || lowPowerDevice;
+
+   useEffect(() => {
+   if (typeof navigator !== "undefined") {
+     setLowPowerDevice(
+       navigator.hardwareConcurrency <= 4
+     );
+   }
+ }, []);
+  
   return (
     <Canvas
       camera={{ position: [Math.sin((25 * Math.PI) / 180) * 3.0, 0.75, Math.cos((25 * Math.PI) / 180) * 3.0], fov: 42 }}
@@ -101,7 +112,7 @@ export function Scene() {
         <Model url="/models/model.glb" scale={1} />
 
         {/* Cinematic post-processing — desktop only (très coûteux sur GPU mobile) */}
-        {!isMobile && (
+        {!disablePostFX && (
           <EffectComposer multisampling={4}>
             <DepthOfField
               focusDistance={0.012}
