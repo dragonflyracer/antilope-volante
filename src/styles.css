@@ -1123,7 +1123,7 @@
   text-decoration: none;
   color: white;
 
-  opacity: .18;
+  opacity: .8;
 
   transform: rotate(-12deg);
 
@@ -1131,7 +1131,7 @@
 }
 
 .video-overlay-close:hover {
-  opacity: .6;
+  opacity: 1;
   transform: rotate(-5deg) scale(1.08);
 }
 
