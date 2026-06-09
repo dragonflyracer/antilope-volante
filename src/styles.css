@@ -1030,3 +1030,158 @@
   }
 }
 
+.video-overlay-page {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+
+  background: #000;
+}
+
+.video-overlay-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image: url("/images/antilope-background.webp");
+  background-size: cover;
+  background-position: center;
+
+  filter: blur(24px);
+
+  transform: scale(1.1);
+
+  opacity: 0.4;
+}
+
+.video-overlay-content {
+  position: relative;
+  z-index: 2;
+
+  width: min(92vw, 1600px);
+  height: min(82vh, 900px);
+
+  animation: videoEnter 0.8s ease;
+}
+
+.video-frame {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  border-radius: 28px;
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255,255,255,0.08);
+}
+
+.video-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: none;
+}
+
+.video-frame-overlay {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at center,
+      transparent 55%,
+      rgba(0,0,0,.25) 100%
+    );
+
+  z-index: 20;
+}
+
+.video-overlay-close {
+  position: fixed;
+
+  top: -15px;
+  right: 25px;
+
+  z-index: 10;
+
+  font-family: "Caveat", cursive;
+  font-size: clamp(6rem, 12vw, 12rem);
+  font-weight: 700;
+
+  text-decoration: none;
+  color: white;
+
+  opacity: .18;
+
+  transform: rotate(-12deg);
+
+  transition: all .3s ease;
+}
+
+.video-overlay-close:hover {
+  opacity: .6;
+  transform: rotate(-5deg) scale(1.08);
+}
+
+@keyframes videoEnter {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.promo-link-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-family: "Titan One", cursive;
+
+  margin: auto;
+
+  padding: 1.5rem 3rem;
+
+  width: 100%;
+
+  background: black;
+
+  opacity: .8;
+}
+
+.project-watch-button {
+  position: relative;
+
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+
+  color: white;
+  text-decoration: none;
+
+  opacity: 0.9;
+
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.project-watch-button:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}

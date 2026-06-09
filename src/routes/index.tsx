@@ -6,6 +6,7 @@ import { ContactButton } from "@/components/ContactButton";
 import { MenuButton } from "@/components/MenuButton";
 import { ContactSection } from "@/components/ContactSection";
 import { ProjectSection } from "@/components/ProjectSection";
+import { PromoLink } from "@/components/PromoLink";
 import neuroneImage from "@/assets/tas-du-neurone.png";
 
 
@@ -170,6 +171,9 @@ function Index() {
           <ProjectSection number="1" title="bYkeS" description={<>Ce projet, réalisé dans le cadre d'une formation en <strong className="emph-uxthinking">UX Thinking</strong>, explorait comment rendre l'achat d'un vélo à la fois simple, rapide et inspirant. L'idée était de présenter les produits efficacement, mais surtout de les montrer dans de vrais contextes d'utilisation afin d'aider l'usager à se projeter naturellement et à choisir plus facilement. L'expérience devait rester <span className="emph-fluide">fluide</span> du début jusqu'au panier, avec une <span className="emph-navlegere">navigation légère</span>, <span className="emph-dynamique">dynamique</span> et agréable à parcourir. Une attention particulière a aussi été portée au sentiment de confiance, notamment grâce à des avis issus de vraies communautés et de véritables utilisateurs. Enfin, le parcours d'achat a été pensé pour éviter les hésitations inutiles : autocomplétion de l'adresse, étapes simplifiées et réduction des distractions au moment de finaliser la commande.</>} youtubeId="ZY7eEg_PSeU" />
 
           <ProjectSection number="2" title="T'as du neurone !" description={<>Jeu éducatif conçu pour être joué autant en salle de cinéma qu'en classe, transformant la révision scolaire en expérience collective, dynamique et amusante. Le projet met les élèves au défi à travers une série de questions et d'épreuves portant sur l'ensemble des notions vues durant l'année scolaire. Pensé pour <span className="emph-stimuler">stimuler</span> la participation et l'esprit d'équipe, le jeu cherche à rendre l'<span className="emph-apprentissage">apprentissage</span> plus vivant grâce à une <span className="emph-scene">mise en scène immersive</span>, un rythme soutenu et une ambiance inspirée des grands jeux-questionnaires interactifs.</>} imageUrl={neuroneImage} />
+          
+          <PromoLink />
+          
           <ContactSection />
         </>
       )}
