@@ -32,9 +32,9 @@ export const Route = createFileRoute("/")({
 });
 
 const slides = [
-  { text: "Mon univers du UX", hasArrow: true },
+  { text: "Naviguer avec agilité", hasArrow: true },
   { text: "Défiler pour découvrir", hasArrow: true },
-  { text: "Défiler sur le web avec la facilité d'une gazelle", hasArrow: true },
+  { text: "Conçu pour convaincre", hasArrow: true },
 ];
 
 function TextCarousel({ visible }: { visible: boolean }) {
