@@ -1,6 +1,7 @@
 import { Copy, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import powderBurst from "@/assets/powder-burst.mp4";
+import powderBurstStart from "@/assets/powder-burst-start.webp";
 
 export function ContactSection() {
   const [copied, setCopied] = useState(false);
@@ -91,6 +92,7 @@ export function ContactSection() {
         ref={videoRef}
         className="contact-powder-burst"
         src={powderBurst}
+        poster={powderBurstStart}
         muted
         playsInline
         preload="auto"
