@@ -39,7 +39,7 @@ useEffect(() => {
           <div className="video-frame-overlay" />
 
           <iframe
-            src="https://www.youtube-nocookie.com/embed/c9IlZXSfsZU?autoplay=1&mute=1&rel=0&playsinline=1&controls=0&loop=1&playlist=c9IlZXSfsZU"
+            src="https://www.youtube-nocookie.com/embed/lIBs3OJ9kOc?autoplay=1&mute=1&rel=0&playsinline=1&controls=0&loop=1&playlist=lIBs3OJ9kOc"
             title="L'Antilope volante"
             loading="eager"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
