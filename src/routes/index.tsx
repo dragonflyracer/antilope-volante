@@ -13,11 +13,11 @@ import neuroneImage from "@/assets/tas-du-neurone.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "L'Antilope volante" },
-      { name: "description", content: "David Lelièvre vous présente L'Antilope volante — une expérience 3D immersive." },
+      { title: "L'Antilope volante - Créations numériques" },
+      { name: "description", content: "Créations numériques de David Lelièvre : expériences interactives, jeux, animation et design visuel." },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { property: "og:title", content: "L'Antilope volante" },
-      { property: "og:description", content: "David Lelièvre vous présente L'Antilope volante — une expérience 3D immersive." },
+      { property: "og:description",   content: "Créations numériques de David Lelièvre : expériences interactives, jeux, animation et design visuel."},
       { property: "og:url", content: "https://antilope-volante.com/" },
       { property: "og:site_name", content: "L'Antilope volante" },
       { property: "og:image", content: "https://antilope-volante.com/models/og-antilope.png" },
