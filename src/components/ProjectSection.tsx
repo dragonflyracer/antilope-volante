@@ -34,7 +34,7 @@ export function ProjectSection({
 
       {youtubeId ? (
         <div className="project-stacked">
-          <div className="project-text project-text-centered">
+          <div className="project-text">
             <h2 className="project-title">{title}</h2>
             <p className="project-description">{description}</p>
           </div>
