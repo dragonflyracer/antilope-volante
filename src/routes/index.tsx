@@ -39,7 +39,7 @@ export const Route = createFileRoute("/")({
 const slides = [
   { text: "Naviguer avec agilité", hasArrow: true },
   { text: "Défiler pour découvrir", hasArrow: true },
-  { text: "Conçu pour convaincre", hasArrow: true },
+  { text: "Suivez l'Antilope", hasArrow: true },
 ];
 
 function TextCarousel({ visible }: { visible: boolean }) {
