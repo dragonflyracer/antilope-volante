@@ -178,21 +178,6 @@ function Index() {
             title="bYkeS"
             description={
               <>
-                <h4>Défis</h4>
-
-                <ul className="project-list project-list--challenges">
-                  <li>
-                    Comparer <span className="emph-dynamique">rapidement</span> les modèles
-                  </li>
-                  <li>
-                    Aider l'utilisateur à se projeter
-                  </li>
-                  <li>
-                    Réduire les hésitations avant l'achat
-                  </li>
-                </ul>
-
-                <h4>Décisions UX</h4>
 
                 <ul className="project-list project-list--success">
                   <li>
