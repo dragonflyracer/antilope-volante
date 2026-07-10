@@ -145,7 +145,7 @@ function IntroOverlay() {
 
   return (
     <div ref={overlayRef} className="intro-overlay" style={{ willChange: 'transform, opacity' }}>
-      <p className="intro-subtitle">DES SITES WEB CONÇUS POUR CONVAINCRE</p>
+      <p className="intro-subtitle">DES SITES WEB QUI CONVAINQUENT</p>
       <h1 className="intro-title">L'Antilope volante</h1>
       <TextCarousel visible={true} />
     </div>
