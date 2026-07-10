@@ -181,7 +181,7 @@ function Index() {
 
                 <ul className="project-list project-list--success">
                   <li>
-                    Présenter les vélos dans des contextes réels
+                    Présenter les vélos en action
                   </li>
                   <li>
                     Explorer le vélo <span className="emph-dynamique">point par point</span>
