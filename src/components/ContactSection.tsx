@@ -3,7 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import powderBurst from "@/assets/powder-burst.mp4";
 import powderBurstStart from "@/assets/powder-burst-start.webp";
 
-export function ContactSection() {
+type ContactSectionProps = {
+  onVisibilityChange: (visible: boolean) => void;
+};
+
+export function ContactSection({
+  onVisibilityChange,
+}: ContactSectionProps) {
   const [copied, setCopied] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -60,7 +66,11 @@ export function ContactSection() {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+          const isActive = entry.isIntersecting && entry.intersectionRatio >= 0.25;
+
+          onVisibilityChange(isActive);
+
+          if (isActive) {
             safePlay();
           }
         }

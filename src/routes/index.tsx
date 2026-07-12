@@ -153,6 +153,7 @@ function IntroOverlay() {
 }
 function Index() {
   const [sceneReady, setSceneReady] = useState(false);
+  const [isContactVisible, setIsContactVisible] = useState(false);
 
   return (
     <>
@@ -167,7 +168,7 @@ function Index() {
       <div className="relative h-[300vh]">
         <IntroOverlay />
       </div>
-      <ContactButton />
+      <ContactButton isContactVisible={isContactVisible} />
       <MenuButton />
 
       {/* Defer the rest of the page until the 3D scene + header are ready */}
@@ -204,7 +205,9 @@ function Index() {
           
           <PromoLink />
           
-          <ContactSection />
+          <ContactSection
+            onVisibilityChange={setIsContactVisible}
+          />
         </>
       )}
     </>

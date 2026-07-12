@@ -5,7 +5,12 @@ import { useState, useEffect } from "react";
  * The text "Contactez-moi" follows the curved (left) edge of the half-circle.
  * Turns orange when scrolled into the project section.
  */
-export function ContactButton() {
+
+type ContactButtonProps = {
+  isContactVisible: boolean;
+};
+
+export function ContactButton({ isContactVisible }: ContactButtonProps) {
   const [isOrange, setIsOrange] = useState(false);
 
   useEffect(() => {
@@ -19,16 +24,30 @@ export function ContactButton() {
   }, []);
 
   const handleClick = () => {
+    if (isContactVisible) {
+      window.open(
+        "https://www.facebook.com/people/Antilope-Volante/61591109334142/",
+        "_blank",
+        "noopener,noreferrer"
+      );
+      return;
+    }
+
     const target = document.getElementById("contact");
     if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
   };
 
   return (
     <button
       onClick={handleClick}
-      className={`contact-semi-btn ${isOrange ? "contact-orange" : ""}`}
+      className={`contact-semi-btn ${
+        isContactVisible ? "contact-facebook" : "contact-orange"
+      }`}
       aria-label="Contactez-moi"
     >
       <svg
@@ -51,11 +70,22 @@ export function ContactButton() {
           className="contact-semi-shape"
           strokeWidth="1"
         />
-        <text className="contact-semi-text" textAnchor="middle">
-          <textPath href="#arc-path" startOffset="50%">
-            Contactez-moi
-          </textPath>
-        </text>
+        {isContactVisible ? (
+          <text
+            x="42"
+            y="88"
+            textAnchor="middle"
+            className="facebook-f"
+          >
+            f
+          </text>
+        ) : (
+          <text className="contact-semi-text" textAnchor="middle">
+            <textPath href="#arc-path" startOffset="50%">
+              Contactez-moi
+            </textPath>
+          </text>
+        )}
       </svg>
     </button>
   );
