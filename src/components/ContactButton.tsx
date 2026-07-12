@@ -25,11 +25,8 @@ export function ContactButton({ isContactVisible }: ContactButtonProps) {
 
   const handleClick = () => {
     if (isContactVisible) {
-      window.open(
-        "https://www.facebook.com/people/Antilope-Volante/61591109334142/",
-        "_blank",
-        "noopener,noreferrer"
-      );
+      window.location.href =
+        "https://www.facebook.com/people/Antilope-Volante/61591109334142/";
       return;
     }
 
