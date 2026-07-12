@@ -92,7 +92,13 @@ export function ContactButton({ isContactVisible }: ContactButtonProps) {
   ) : (
     <button
       onClick={handleClick}
-      className="contact-semi-btn contact-orange"
+      className={`contact-semi-btn ${
+        isContactVisible
+          ? "contact-facebook"
+          : isOrange
+            ? "contact-orange"
+            : ""
+      }`}
       aria-label="Contactez-moi"
     >
       {content}
