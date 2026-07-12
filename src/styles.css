@@ -1234,3 +1234,7 @@
   font-weight: 700;
   dominant-baseline: middle;
 }
+
+.contact-semi-shape {
+  transition: fill .35s ease;
+}
