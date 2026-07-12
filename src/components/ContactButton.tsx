@@ -39,51 +39,63 @@ export function ContactButton({ isContactVisible }: ContactButtonProps) {
     }
   };
 
-  return (
+  const content = (
+    <svg
+      viewBox="0 0 80 160"
+      className="contact-semi-svg"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="none"
+    >
+      <defs>
+        <path
+          id="arc-path"
+          d="M 80,12 A 68,68 0 0,0 80,148"
+          fill="none"
+        />
+      </defs>
+
+      <path
+        d="M 80,0 A 80,80 0 0,0 80,160 Z"
+        className="contact-semi-shape"
+        strokeWidth="1"
+      />
+
+      {isContactVisible ? (
+        <text
+          x="42"
+          y="88"
+          textAnchor="middle"
+          className="facebook-f"
+        >
+          f
+        </text>
+      ) : (
+        <text className="contact-semi-text" textAnchor="middle">
+          <textPath href="#arc-path" startOffset="50%">
+            Contactez-moi
+          </textPath>
+        </text>
+      )}
+    </svg>
+  );
+
+  return isContactVisible ? (
+    <a
+      href="https://www.facebook.com/people/Antilope-Volante/61591109334142/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="contact-semi-btn contact-facebook"
+      aria-label="Facebook"
+    >
+      {content}
+    </a>
+  ) : (
     <button
       onClick={handleClick}
-      className={`contact-semi-btn ${
-        isContactVisible ? "contact-facebook" : "contact-orange"
-      }`}
+      className="contact-semi-btn contact-orange"
       aria-label="Contactez-moi"
     >
-      <svg
-        viewBox="0 0 80 160"
-        className="contact-semi-svg"
-        xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="none"
-      >
-        <defs>
-          {/* Arc following the curved left edge, from top to bottom */}
-          <path
-            id="arc-path"
-            d="M 80,12 A 68,68 0 0,0 80,148"
-            fill="none"
-          />
-        </defs>
-        {/* Half-circle (D shape) bulging to the left, flat against the right edge */}
-        <path
-          d="M 80,0 A 80,80 0 0,0 80,160 Z"
-          className="contact-semi-shape"
-          strokeWidth="1"
-        />
-        {isContactVisible ? (
-          <text
-            x="42"
-            y="88"
-            textAnchor="middle"
-            className="facebook-f"
-          >
-            f
-          </text>
-        ) : (
-          <text className="contact-semi-text" textAnchor="middle">
-            <textPath href="#arc-path" startOffset="50%">
-              Contactez-moi
-            </textPath>
-          </text>
-        )}
-      </svg>
+      {content}
     </button>
   );
 }
