@@ -26,7 +26,7 @@ export function ContactButton({ isContactVisible }: ContactButtonProps) {
   const handleClick = () => {
     if (isContactVisible) {
       window.location.href =
-        "https://www.facebook.com/people/Antilope-Volante/61591109334142/";
+        "https://www.facebook.com/antilopevolante";
       return;
     }
 
@@ -81,7 +81,7 @@ export function ContactButton({ isContactVisible }: ContactButtonProps) {
 
   return isContactVisible ? (
     <a
-      href="https://www.facebook.com/people/Antilope-Volante/61591109334142/"
+      href="https://www.facebook.com/antilopevolante"
       target="_blank"
       rel="noopener noreferrer"
       className="contact-semi-btn contact-facebook"
