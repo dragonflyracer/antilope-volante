@@ -22,7 +22,7 @@ export function SkyBackground() {
   useEffect(() => {
   if (typeof navigator !== "undefined") {
     setLowPowerDevice(
-      navigator.hardwareConcurrency <= 4
+      navigator.deviceMemory <= 4
     );
   }
 }, []);
