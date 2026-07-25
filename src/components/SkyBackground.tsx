@@ -20,12 +20,12 @@ export function SkyBackground() {
   const disableBlur = isMobile || lowPowerDevice;
 
   useEffect(() => {
-  if (typeof navigator !== "undefined") {
-    setLowPowerDevice(
-      navigator.deviceMemory <= 4
-    );
-  }
-}, []);
+    if (typeof navigator !== "undefined") {
+      setLowPowerDevice(
+        ((navigator as any).deviceMemory ?? 8) <= 4
+      );
+    }
+  }, []);
 
   useEffect(() => {
     let raf = 0;
