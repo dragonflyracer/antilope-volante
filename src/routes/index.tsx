@@ -191,10 +191,12 @@ function Index() {
       <div className="relative h-[300vh]">
         <IntroOverlay />
       </div>
-      <ContactButton
-        isContactVisible={isContactVisible}
-        isOrange={isOrange}
-      />
+      {sceneReady && (
+        <ContactButton
+          isContactVisible={isContactVisible}
+          isOrange={isOrange}
+        />
+      )}
       <MenuButton />
 
       {/* Defer the rest of the page until the 3D scene + header are ready */}
