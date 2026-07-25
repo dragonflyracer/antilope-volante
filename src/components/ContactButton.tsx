@@ -8,20 +8,13 @@ import { useState, useEffect } from "react";
 
 type ContactButtonProps = {
   isContactVisible: boolean;
+  isOrange: boolean;
 };
 
-export function ContactButton({ isContactVisible }: ContactButtonProps) {
-  const [isOrange, setIsOrange] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => {
-      const threshold = window.innerHeight * 3;
-      setIsOrange(window.scrollY >= threshold);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+export function ContactButton({
+  isContactVisible,
+  isOrange,
+}: ContactButtonProps) {
 
   const handleClick = () => {
     if (isContactVisible) {

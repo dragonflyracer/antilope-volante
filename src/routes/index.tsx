@@ -155,11 +155,25 @@ function Index() {
   const [sceneReady, setSceneReady] = useState(false);
   const [isContactVisible, setIsContactVisible] = useState(false);
 
+  const [isOrange, setIsOrange] = useState(false);
+  
+  useEffect(() => {
+    const onScroll = () => {
+      const threshold = window.innerHeight * 3;
+      setIsOrange(window.scrollY >= threshold);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll(); // initialise l'état
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const isLowEndDevice =
     typeof navigator !== "undefined" &&
     (((navigator as any).deviceMemory ?? 8) <= 4);
 
-  const hideScene = isLowEndDevice && isContactVisible;
+  const hideScene = isLowEndDevice && isOrange;
 
   return (
     <>
@@ -177,7 +191,10 @@ function Index() {
       <div className="relative h-[300vh]">
         <IntroOverlay />
       </div>
-      <ContactButton isContactVisible={isContactVisible} />
+      <ContactButton
+        isContactVisible={isContactVisible}
+        isOrange={isOrange}
+      />
       <MenuButton />
 
       {/* Defer the rest of the page until the 3D scene + header are ready */}
