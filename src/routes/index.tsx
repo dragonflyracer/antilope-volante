@@ -155,13 +155,22 @@ function Index() {
   const [sceneReady, setSceneReady] = useState(false);
   const [isContactVisible, setIsContactVisible] = useState(false);
 
+  const isLowEndDevice =
+    typeof navigator !== "undefined" &&
+    (((navigator as any).deviceMemory ?? 8) <= 4);
+
+  const hideScene = isLowEndDevice && isContactVisible;
+
   return (
     <>
       <SkyBackground />
 
       <main className="fixed inset-0">
         <h1 className="sr-only">L'Antilope volante</h1>
-        <ClientScene onReady={setSceneReady} />
+
+        {!hideScene && (
+          <ClientScene onReady={setSceneReady} />
+        )}
       </main>
 
       {/* Sticky intro lives inside the spacer so it releases when project sections start */}

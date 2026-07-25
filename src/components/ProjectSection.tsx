@@ -36,7 +36,7 @@ export function ProjectSection({
         <div className="project-stacked">
           <div className="project-text">
             <h2 className="project-title">{title}</h2>
-            <p className="project-description">{description}</p>
+            <div className="project-description">{description}</div>
           </div>
 
           <div className="project-short">
@@ -61,7 +61,7 @@ export function ProjectSection({
         <div className="project-stacked">
           <div className="project-text project-text-centered">
             <h2 className="project-title">{title}</h2>
-            <p className="project-description">{description}</p>
+            <div className="project-description">{description}</div>
           </div>
 
           <div className="project-short">
@@ -74,7 +74,7 @@ export function ProjectSection({
         <div className="project-content">
           <div className="project-text">
             <h2 className="project-title">{title}</h2>
-            <p className="project-description">{description}</p>
+            <div className="project-description">{description}</div>
           </div>
           <div className="project-image">
             <div className="project-image-placeholder">Image du projet</div>
