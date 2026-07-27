@@ -30,7 +30,7 @@ const questions = [
 
 export function FaqSection() {
   return (
-    <section className="faq-section">
+    <section className="mx-auto max-w-4xl px-4 sm:px-6 py-24">
       <div className="faq-container">
 
         <div className="faq-antelope-space" />
