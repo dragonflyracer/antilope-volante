@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import ReactGA from "react-ga4";
 
 export const Route = createFileRoute("/video-projets")({
   head: () => ({
@@ -17,13 +18,26 @@ export const Route = createFileRoute("/video-projets")({
 function VideoProjectsPage() {
   const [blurred, setBlurred] = useState(true);
 
-useEffect(() => {
-  const t = setTimeout(() => {
-    setBlurred(false);
-  }, 2500);
+  useEffect(() => {
+    if (!(window as any).__ga_initialized) {
+      ReactGA.initialize("G-Z6ESSP10Q2");
+      (window as any).__ga_initialized = true;
+    }
 
-  return () => clearTimeout(t);
-}, []);
+    ReactGA.send({
+      hitType: "pageview",
+      page: window.location.pathname + window.location.search,
+      title: document.title,
+    });
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setBlurred(false);
+    }, 2500);
+
+    return () => clearTimeout(t);
+  }, []);
   return (
     <div className="video-overlay-page">
       <Link
@@ -31,26 +45,26 @@ useEffect(() => {
         className="video-overlay-close"
         aria-label="Retour à l'accueil"
       >
-        ×
+      ×
       </Link>
 
-      <div className="video-overlay-content">
-        <div className="video-frame">
-          <div className="video-frame-overlay" />
+        <div className="video-overlay-content">
+          <div className="video-frame">
+            <div className="video-frame-overlay" />
 
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/lIBs3OJ9kOc?autoplay=1&mute=1&rel=0&playsinline=1&controls=0&loop=1&playlist=lIBs3OJ9kOc"
-            title="L'Antilope volante"
-            loading="eager"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            style={{
-              filter: blurred ? "blur(24px)" : "none",
-              transition: "filter 800ms ease-out",
-            }}
-          />
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/lIBs3OJ9kOc?autoplay=1&mute=1&rel=0&playsinline=1&controls=0&loop=1&playlist=lIBs3OJ9kOc"
+              title="L'Antilope volante"
+              loading="eager"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              style={{
+                filter: blurred ? "blur(24px)" : "none",
+                transition: "filter 800ms ease-out",
+              }}
+            />
+          </div>
         </div>
       </div>
-    </div>
   );
 }
