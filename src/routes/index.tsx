@@ -7,6 +7,7 @@ import { MenuButton } from "@/components/MenuButton";
 import { ContactSection } from "@/components/ContactSection";
 import { ProjectSection } from "@/components/ProjectSection";
 import { PromoLink } from "@/components/PromoLink";
+import { FaqSection } from "@/components/FaqSection";
 import neuroneImage from "@/assets/tas-du-neurone.png";
 
 
@@ -232,7 +233,7 @@ function Index() {
           <ProjectSection number="2" title="T'as du neurone !" description={<>Jeu éducatif conçu pour être joué autant en salle de cinéma qu'en classe, transformant la révision scolaire en expérience collective, dynamique et amusante. Le projet met les élèves au défi à travers une série de questions et d'épreuves portant sur l'ensemble des notions vues durant l'année scolaire. Pensé pour <span className="emph-stimuler">stimuler</span> la participation et l'esprit d'équipe, le jeu cherche à rendre l'<span className="emph-apprentissage">apprentissage</span> plus vivant grâce à une <span className="emph-scene">mise en scène immersive</span>, un rythme soutenu et une ambiance inspirée des grands jeux-questionnaires interactifs.</>} imageUrl={neuroneImage} />
           
           <PromoLink />
-          
+          <FaqSection />
           <ContactSection
             onVisibilityChange={setIsContactVisible}
           />
