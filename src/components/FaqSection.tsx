@@ -9,22 +9,22 @@ const questions = [
   {
     question: "Un site web qui se démarque, c'est cher ?",
     answer:
-      "Moins que vous le pensez. Une conception réfléchie dès le départ permet souvent d'obtenir un site distinctif sans faire exploser le budget.",
+      "Pas forcément. Un site coûte surtout cher lorsqu'il est mal pensé. Une conception réfléchie dès le départ permet souvent de créer une expérience mémorable tout en respectant votre budget.",
   },
   {
-    question: "Pourquoi confier votre projet à l'Antilope Volante ?",
+    question: "Pourquoi choisir L'Antilope volante ?",
     answer:
-      "Parce que je développe et conçois des expériences numériques depuis plus de 15 ans. J'ai imaginé et réalisé des projets variés, du jeu vidéo aux expériences interactives, avec un même objectif : créer quelque chose qui marque les esprits.",
+      "Parce que je ne crée pas seulement des sites web. Depuis plus de 15 ans, je conçois des expériences numériques qui captent l'attention et donnent envie d'aller plus loin. Chaque projet est imaginé pour raconter une histoire et atteindre un objectif concret.",
   },
   {
-    question: "Et si je ne sais pas exactement ce que je veux ?",
+    question: "Je n'ai qu'une idée... est-ce suffisant ?",
     answer:
-      "C'est normal. Mon rôle est justement de vous aider à clarifier votre idée, puis de vous proposer une approche adaptée à vos objectifs et à votre budget.",
+      "Oui. Beaucoup de projets commencent par une simple intuition. Ensemble, nous clarifions votre vision pour construire un site qui vous ressemble réellement.",
   },
   {
-    question: "Combien de temps faut-il ?",
+    question: "À quoi ressemble la collaboration ?",
     answer:
-      "Chaque projet est différent, mais je privilégie toujours une approche efficace : avancer rapidement sans sacrifier la qualité.",
+      "Simple, transparente et humaine. Nous échangeons, nous validons les grandes étapes ensemble et vous voyez votre projet évoluer progressivement, sans mauvaise surprise.",
   },
 ];
 
