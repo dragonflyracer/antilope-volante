@@ -19,7 +19,7 @@ const questions = [
   {
     question: "Pourquoi vos sites sont-ils plus faciles à utiliser ?",
     answer:
-      "L'Antilope volante est née d'une idée simple : lorsqu'un chemin est bien pensé, on avance avec légèreté. C'est cette philosophie que j'applique à chaque projet. Je repère les points de friction, j'élimine les détours inutiles et je construis des interfaces qui donnent envie d'aller jusqu'au bout.",
+      "Une antilope franchit les obstacles avec agilité. C'est exactement ce que je cherche à offrir aux visiteurs d'un site. J'identifie les hésitations, les détours et les points de friction, puis je simplifie le parcours pour que chaque étape soit évidente. Le résultat : une expérience fluide, naturelle et agréable du début à la fin.",
   },
   {
     question: "À quoi ressemble la collaboration ?",
