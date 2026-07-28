@@ -19,7 +19,7 @@ const questions = [
   {
     question: "Pourquoi vos sites sont-ils plus faciles à utiliser ?",
     answer:
-      "Une antilope franchit les obstacles avec agilité. C'est exactement ce que je cherche à offrir aux visiteurs d'un site. J'identifie les hésitations, les détours et les points de friction, puis je simplifie le parcours pour que chaque étape soit évidente. Le résultat : une expérience fluide, naturelle et agréable du début à la fin.",
+      "L'Antilope volante porte une conviction : lorsqu'un chemin est bien pensé, on avance avec légèreté. J'aime créer des expériences qui suscitent l'émotion et donnent envie d'aller plus loin. Mais lorsque le visiteur décide d'agir, tout devient naturel : chaque information est à sa place, chaque étape est fluide et chaque interaction a une raison d'être.",
   },
   {
     question: "À quoi ressemble la collaboration ?",
