@@ -17,9 +17,9 @@ const questions = [
       "Parce que je ne crée pas seulement des sites web. Depuis plus de 15 ans, je conçois des expériences numériques qui captent l'attention et donnent envie d'aller plus loin. Chaque projet est imaginé pour raconter une histoire et atteindre un objectif concret.",
   },
   {
-    question: "Je n'ai qu'une idée... est-ce suffisant ?",
+    question: "Pourquoi vos sites sont-ils plus faciles à utiliser ?",
     answer:
-      "Oui. Beaucoup de projets commencent par une simple intuition. Ensemble, nous clarifions votre vision pour construire un site qui vous ressemble réellement.",
+      "Je cherche d'abord à comprendre où l'utilisateur hésite, où il se perd ou abandonne. Ensuite, j'organise l'information pour que chaque étape soit évidente.",
   },
   {
     question: "À quoi ressemble la collaboration ?",
