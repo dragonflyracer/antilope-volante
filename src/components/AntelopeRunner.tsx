@@ -454,17 +454,27 @@ export default function AntelopeRunner() {
 
   const bestScore = Math.max(score, best);
   const shareText = `J'ai fait ${bestScore} points à L'Antilope volante ! Peux-tu faire mieux ?`;
-  const fbShareHref = pageUrl
-    ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(shareText)}`
+  // On encode le score dans l'URL partagée : même si Facebook ignore le texte,
+  // le lien porte le score.
+  const shareUrl = pageUrl ? `${pageUrl}?score=${bestScore}` : "";
+  const fbShareHref = shareUrl
+    ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`
     : "https://www.facebook.com/";
 
   const shareScore = useCallback(async () => {
-    if (navigator.share && pageUrl) {
+    // On copie aussi le texte : pratique quand l'app cible ne garde que l'URL.
+    try {
+      await navigator.clipboard?.writeText(`${shareText} ${shareUrl}`);
+    } catch {
+      /* clipboard indisponible */
+    }
+
+    if (navigator.share && shareUrl) {
       try {
         await navigator.share({
           title: "L'Antilope volante",
           text: shareText,
-          url: pageUrl,
+          url: shareUrl,
         });
         return;
       } catch (error) {
@@ -474,7 +484,8 @@ export default function AntelopeRunner() {
 
     // Sur ordinateur, le composeur web Facebook reste la solution de repli.
     window.open(fbShareHref, "_blank", "noopener,noreferrer");
-  }, [fbShareHref, pageUrl, shareText]);
+  }, [fbShareHref, shareUrl, shareText]);
+
 
 
   const jump = useCallback(() => {
@@ -1341,9 +1352,9 @@ export default function AntelopeRunner() {
                 ? "Ligne d'arrivée !"
                 : "Course terminée"}
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Score {score} · Record {best}
-            </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Score {score} · Record {best}
+          </p>
             <Button
               type="button"
               size="lg"
@@ -1360,35 +1371,38 @@ export default function AntelopeRunner() {
 
             {phase !== "idle" && (
               <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                <Button
+                <button
                   type="button"
-                  variant="outline"
-                  size="sm"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
                     void shareScore();
                   }}
-                  className="rounded-full px-5 text-xs font-bold uppercase tracking-[0.14em] transition-transform hover:scale-105 active:scale-95"
+                  className="inline-flex items-center rounded-full border-2 px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-transform hover:scale-105 active:scale-95"
+                  style={{
+                    borderColor: "hsl(var(--primary))",
+                    color: "hsl(var(--primary))",
+                    background: "transparent",
+                  }}
                 >
                   <Share2 className="mr-2 h-4 w-4" />
                   Partager le score
-                </Button>
-                <Button
+                </button>
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigator.clipboard?.writeText(`${shareText} ${pageUrl}`);
+                    navigator.clipboard?.writeText(`${shareText} ${shareUrl}`);
                   }}
-                  className="rounded-full px-4 text-xs font-bold uppercase tracking-[0.14em]"
+                  className="inline-flex items-center rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] underline-offset-4 hover:underline"
+                  style={{ color: "hsl(var(--primary))", background: "transparent" }}
                 >
                   Copier
-                </Button>
+                </button>
               </div>
             )}
+
           </div>
         </div>
       )}
