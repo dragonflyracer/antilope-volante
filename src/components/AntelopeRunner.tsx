@@ -19,7 +19,6 @@ import f11 from "@/assets/run-11.png";
 import f12 from "@/assets/run-12.png";
 import { Button } from "@/components/ui/button";
 import { Share2, Volume2, VolumeX } from "lucide-react";
-
 const musicAsset = { url: "/sky-antelope.mp3" };
 
 const FRAMES = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12];
@@ -302,7 +301,59 @@ type Phase = "idle" | "running" | "over" | "won";
 /** Longueur du parcours, en pixels de défilement (~60 s de course). */
 const RACE_LENGTH = 26000;
 
+/**
+ * Certains navigateurs intégrés (Facebook, Instagram…) verrouillent l'orientation.
+ * On force alors un rendu paysage par rotation CSS.
+ */
 export default function AntelopeRunner() {
+  const [vp, setVp] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const update = () =>
+      setVp({
+        w: window.visualViewport?.width ?? window.innerWidth,
+        h: window.visualViewport?.height ?? window.innerHeight,
+      });
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    window.visualViewport?.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+      window.visualViewport?.removeEventListener("resize", update);
+    };
+  }, []);
+
+  const isPortrait = vp.w > 0 && vp.h > vp.w;
+
+  if (!isPortrait)
+    return (
+      <div className="h-[100dvh] w-full">
+        <RunnerGame />
+      </div>
+    );
+
+  return (
+    <div className="fixed inset-0 overflow-hidden bg-background">
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: vp.h,
+          height: vp.w,
+          transformOrigin: "top left",
+          transform: `rotate(90deg) translateY(-${vp.w}px)`,
+        }}
+      >
+        <RunnerGame />
+      </div>
+    </div>
+  );
+}
+
+function RunnerGame() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
@@ -912,7 +963,7 @@ export default function AntelopeRunner() {
 
   return (
     <div
-      className="relative h-[100dvh] w-full touch-none select-none overflow-hidden bg-background"
+      className="relative h-full w-full touch-none select-none overflow-hidden bg-background"
       onPointerDown={jump}
       onPointerUp={releaseJump}
       onPointerCancel={releaseJump}
@@ -1390,11 +1441,7 @@ export default function AntelopeRunner() {
                 : "Course terminée"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              {phase === "idle"
-                ? "Parcours complet : tenez la distance jusqu'à l'arrivée. Touchez l'écran ou appuyez sur Espace pour bondir."
-                : phase === "won"
-                ? `Parcours terminé · Bonus +1500 · Score ${score} · Record ${best}`
-                : `Score ${score} · Record ${best}`}
+              Score {score} · Record {best}
             </p>
             <Button
               type="button"
@@ -1444,16 +1491,8 @@ export default function AntelopeRunner() {
         </div>
       )}
 
-      {/* Rotate hint (portrait) */}
-      <div className="absolute inset-0 z-50 hidden place-items-center bg-background px-8 text-center portrait:grid landscape:hidden">
-        <div>
-          <img src={f1} alt="" aria-hidden className="mx-auto w-40 rotate-90 opacity-90" />
-          <p className="mt-6 text-lg font-black text-foreground">Tournez votre appareil</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ce jeu est optimisé pour le mode paysage.
-          </p>
-        </div>
-      </div>
+
+
     </div>
   );
 }
