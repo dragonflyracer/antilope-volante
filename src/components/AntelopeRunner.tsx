@@ -329,10 +329,21 @@ export default function AntelopeRunner() {
 
   if (!isPortrait)
     return (
-      <div className="h-[100dvh] w-full">
-        <RunnerGame />
+      <div className="flex h-[100dvh] w-full items-center justify-center bg-background">
+        <div
+          className="relative w-full overflow-hidden sm:rounded-2xl sm:shadow-2xl"
+          style={{
+            height: "100%",
+            maxWidth: 1280,
+            maxHeight: 720,
+            aspectRatio: "16 / 9",
+          }}
+        >
+          <RunnerGame />
+        </div>
       </div>
     );
+
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-background">
@@ -1030,8 +1041,8 @@ function RunnerGame() {
           k={0.0007}
           className="inset-x-0"
           style={{
-            bottom: `${((H - GROUND_Y) / H) * 100}%`,
-            height: "22%",
+            bottom: `calc(${((H - GROUND_Y) / H) * 100}% - 26px)`,
+            height: "24%",
             backgroundPosition: "bottom",
             filter: "saturate(1.05) brightness(1.02)",
           }}
@@ -1441,7 +1452,11 @@ function RunnerGame() {
                 : "Course terminée"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Score {score} · Record {best}
+              {phase === "idle"
+                ? "Parcours complet : tenez la distance jusqu'à l'arrivée. Touchez l'écran ou appuyez sur Espace pour bondir."
+                : phase === "won"
+                ? `Parcours terminé · Bonus +1500 · Score ${score} · Record ${best}`
+                : `Score ${score} · Record ${best}`}
             </p>
             <Button
               type="button"
