@@ -18,9 +18,10 @@ import f10 from "@/assets/run-10.png";
 import f11 from "@/assets/run-11.png";
 import f12 from "@/assets/run-12.png";
 import { Button } from "@/components/ui/button";
-import { Volume2, VolumeX } from "lucide-react";
+import { Share2, Volume2, VolumeX } from "lucide-react";
 
 const musicAsset = { url: "/sky-antelope.mp3" };
+
 const FRAMES = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12];
 
 // ============== Performance tuning ==============
@@ -456,6 +457,24 @@ export default function AntelopeRunner() {
   const fbShareHref = pageUrl
     ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(shareText)}`
     : "https://www.facebook.com/";
+
+  const shareScore = useCallback(async () => {
+    if (navigator.share && pageUrl) {
+      try {
+        await navigator.share({
+          title: "L'Antilope volante",
+          text: shareText,
+          url: pageUrl,
+        });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
+
+    // Sur ordinateur, le composeur web Facebook reste la solution de repli.
+    window.open(fbShareHref, "_blank", "noopener,noreferrer");
+  }, [fbShareHref, pageUrl, shareText]);
 
 
   const jump = useCallback(() => {
@@ -1341,16 +1360,20 @@ export default function AntelopeRunner() {
 
             {phase !== "idle" && (
               <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                <a
-                  href={fbShareHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
                   onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center rounded-full border border-border px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-foreground transition-transform hover:scale-105 active:scale-95"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void shareScore();
+                  }}
+                  className="rounded-full px-5 text-xs font-bold uppercase tracking-[0.14em] transition-transform hover:scale-105 active:scale-95"
                 >
-                  Partager sur Facebook
-                </a>
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Partager le score
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"
