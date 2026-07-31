@@ -1340,3 +1340,48 @@
     text-shadow:
         0 2px 12px rgba(0,0,0,.45);
 }
+
+:root {
+  --sky-top: oklch(0.78 0.12 240);
+  --sky-bottom: oklch(0.95 0.05 95);
+  --dune: oklch(0.78 0.11 135);
+  --ground: oklch(0.62 0.14 140);
+  --gradient-antelope: linear-gradient(
+    100deg,
+    oklch(0.5 0.24 292),
+    oklch(0.62 0.27 350),
+    oklch(0.75 0.2 45),
+    oklch(0.86 0.17 88)
+  );
+  --shadow-hud: 0 8px 28px -12px oklch(0.1 0.05 285 / 80%);
+  --shadow-glow: 0 0 40px -6px oklch(0.75 0.2 45 / 55%);
+}
+
+@theme inline {
+  --animate-dust: dust 0.6s linear infinite;
+  --animate-float-slow: float-slow 6s ease-in-out infinite;
+}
+
+@keyframes dust {
+  0% { opacity: 0.55; transform: translateX(0) scale(1); }
+  100% { opacity: 0; transform: translateX(-70px) scale(0.4); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@utility text-gradient-antelope {
+  background-image: var(--gradient-antelope);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility hud-panel {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-hud);
+}
