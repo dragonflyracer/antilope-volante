@@ -19,8 +19,7 @@ import f11 from "@/assets/run-11.png";
 import f12 from "@/assets/run-12.png";
 import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
-
-const musicAsset = { url: "/sky-antelope.mp3" };
+import musicAsset from "@/assets/sky-antelope.mp3.asset.json";
 
 const FRAMES = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12];
 
@@ -440,6 +439,24 @@ export default function AntelopeRunner() {
     setPhase("running");
     setRenderTick((n) => n + 1);
   }, [setupAnalyser]);
+
+  const [pageUrl, setPageUrl] = useState("");
+  useEffect(() => {
+    let u = window.location.href;
+    try {
+      if (window.top !== window.self && document.referrer) u = document.referrer;
+    } catch {
+      if (document.referrer) u = document.referrer;
+    }
+    setPageUrl(u.split("?")[0]);
+  }, []);
+
+  const bestScore = Math.max(score, best);
+  const shareText = `J'ai fait ${bestScore} points à L'Antilope volante ! Peux-tu faire mieux ?`;
+  const fbShareHref = pageUrl
+    ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(shareText)}`
+    : "https://www.facebook.com/";
+
 
   const jump = useCallback(() => {
     const s = g.current;
@@ -1306,7 +1323,7 @@ export default function AntelopeRunner() {
                 : "Course terminée"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-             {`Score ${score} · Record ${best}`}
+              Score {score} · Record {best}
             </p>
             <Button
               type="button"
@@ -1321,6 +1338,34 @@ export default function AntelopeRunner() {
             >
               {phase === "idle" ? "Galoper" : phase === "won" ? "Recourir" : "Rejouer"}
             </Button>
+
+            {phase !== "idle" && (
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                <a
+                  href={fbShareHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center rounded-full border border-border px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-foreground transition-transform hover:scale-105 active:scale-95"
+                >
+                  Partager sur Facebook
+                </a>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard?.writeText(`${shareText} ${pageUrl}`);
+                  }}
+                  className="rounded-full px-4 text-xs font-bold uppercase tracking-[0.14em]"
+                >
+                  Copier
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
