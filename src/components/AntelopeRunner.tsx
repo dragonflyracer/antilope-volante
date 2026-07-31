@@ -462,20 +462,57 @@ export default function AntelopeRunner() {
     : "https://www.facebook.com/";
 
   const shareScore = useCallback(async () => {
-    // On copie aussi le texte : pratique quand l'app cible ne garde que l'URL.
+    const fullShareText = `${shareText} ${shareUrl}`;
+
+    // Facebook supprime souvent le texte prérempli. Une carte-image garantit
+    // que le score reste visible dans la publication choisie par le joueur.
+    let scoreFile: File | undefined;
     try {
-      await navigator.clipboard?.writeText(`${shareText} ${shareUrl}`);
+      const canvas = document.createElement("canvas");
+      canvas.width = 1200;
+      canvas.height = 630;
+      const context = canvas.getContext("2d");
+      if (context) {
+        const background = context.createLinearGradient(0, 0, 1200, 630);
+        background.addColorStop(0, "#5d42b8");
+        background.addColorStop(0.52, "#e54c91");
+        background.addColorStop(1, "#f2bd42");
+        context.fillStyle = background;
+        context.fillRect(0, 0, 1200, 630);
+        context.fillStyle = "rgba(255,255,255,0.96)";
+        context.textAlign = "center";
+        context.font = "700 54px system-ui, sans-serif";
+        context.fillText("L’Antilope volante", 600, 155);
+        context.font = "900 150px system-ui, sans-serif";
+        context.fillText(`${bestScore}`, 600, 365);
+        context.font = "700 46px system-ui, sans-serif";
+        context.fillText("POINTS", 600, 445);
+        context.font = "600 32px system-ui, sans-serif";
+        context.fillText("Peux-tu faire mieux ?", 600, 535);
+        const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+        if (blob) scoreFile = new File([blob], `antilope-volante-${bestScore}-points.png`, { type: "image/png" });
+      }
+    } catch {
+      /* création d'image indisponible */
+    }
+
+    try {
+      await navigator.clipboard?.writeText(fullShareText);
     } catch {
       /* clipboard indisponible */
     }
 
     if (navigator.share && shareUrl) {
       try {
-        await navigator.share({
+        const shareData: ShareData = {
           title: "L'Antilope volante",
           text: shareText,
           url: shareUrl,
-        });
+        };
+        if (scoreFile && navigator.canShare?.({ files: [scoreFile] })) {
+          shareData.files = [scoreFile];
+        }
+        await navigator.share(shareData);
         return;
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
@@ -484,7 +521,7 @@ export default function AntelopeRunner() {
 
     // Sur ordinateur, le composeur web Facebook reste la solution de repli.
     window.open(fbShareHref, "_blank", "noopener,noreferrer");
-  }, [fbShareHref, shareUrl, shareText]);
+  }, [bestScore, fbShareHref, shareUrl, shareText]);
 
 
 
@@ -1352,9 +1389,13 @@ export default function AntelopeRunner() {
                 ? "Ligne d'arrivée !"
                 : "Course terminée"}
             </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Score {score} · Record {best}
-          </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {phase === "idle"
+                ? "Parcours complet : tenez la distance jusqu'à l'arrivée. Touchez l'écran ou appuyez sur Espace pour bondir."
+                : phase === "won"
+                ? `Parcours terminé · Bonus +1500 · Score ${score} · Record ${best}`
+                : `Score ${score} · Record ${best}`}
+            </p>
             <Button
               type="button"
               size="lg"
@@ -1371,35 +1412,31 @@ export default function AntelopeRunner() {
 
             {phase !== "idle" && (
               <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
                     void shareScore();
                   }}
-                  className="inline-flex items-center rounded-full border-2 px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-transform hover:scale-105 active:scale-95"
-                  style={{
-                    borderColor: "hsl(var(--primary))",
-                    color: "hsl(var(--primary))",
-                    background: "transparent",
-                  }}
+                  className="rounded-full border-primary bg-primary px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:scale-105 hover:bg-primary/90 active:scale-95"
                 >
                   <Share2 className="mr-2 h-4 w-4" />
                   Partager le score
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard?.writeText(`${shareText} ${shareUrl}`);
                   }}
-                  className="inline-flex items-center rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] underline-offset-4 hover:underline"
-                  style={{ color: "hsl(var(--primary))", background: "transparent" }}
+                  className="rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-foreground underline-offset-4 hover:bg-secondary hover:underline"
                 >
                   Copier
-                </button>
+                </Button>
               </div>
             )}
 
