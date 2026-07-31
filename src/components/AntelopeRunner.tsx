@@ -19,7 +19,8 @@ import f11 from "@/assets/run-11.png";
 import f12 from "@/assets/run-12.png";
 import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
-import musicAsset from "@/assets/sky-antelope.mp3.asset.json";
+
+const musicAsset = { url: "/sky-antelope.mp3" };
 
 const FRAMES = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12];
 
@@ -1287,24 +1288,15 @@ export default function AntelopeRunner() {
         </div>
       </header>
 
-      {/* Progression du parcours */}
-      <div className="pointer-events-none absolute inset-x-0 top-[68px] px-4 sm:top-[84px] sm:px-6">
-        <div className="mx-auto h-1.5 w-full max-w-md overflow-hidden rounded-full bg-foreground/15">
-          <div
-            className="h-full rounded-full transition-[width] duration-150"
-            style={{ width: `${Math.round(progress * 100)}%`, backgroundImage: "var(--gradient-antelope)" }}
-          />
-        </div>
-        <p className="mt-1 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-          Parcours {Math.round(progress * 100)}%
-        </p>
-      </div>
-
       <audio ref={audioRef} src={musicAsset.url} loop preload="auto" />
 
       {/* Overlays */}
       {phase !== "running" && (
-        <div className="absolute inset-0 grid place-items-center bg-background/55 px-6 backdrop-blur-[2px]">
+        <div
+          className={`absolute inset-0 grid place-items-center px-6 ${
+            phase === "idle" ? "bg-background/55 backdrop-blur-[2px]" : "bg-white"
+          }`}
+        >
           <div className="hud-panel max-w-md rounded-3xl px-6 py-5 text-center sm:px-10 sm:py-7">
             <h1 className="text-gradient-antelope text-2xl font-black tracking-tight sm:text-4xl">
               {phase === "idle"
