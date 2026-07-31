@@ -19,8 +19,8 @@ import f11 from "@/assets/run-11.png";
 import f12 from "@/assets/run-12.png";
 import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
-import musicAsset from "@/assets/sky-antelope.mp3.asset.json";
 
+const musicAsset = { url: "/sky-antelope.mp3" };
 const FRAMES = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12];
 
 // ============== Performance tuning ==============
