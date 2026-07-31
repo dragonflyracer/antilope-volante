@@ -1452,11 +1452,7 @@ function RunnerGame() {
                 : "Course terminée"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              {phase === "idle"
-                ? "Parcours complet : tenez la distance jusqu'à l'arrivée. Touchez l'écran ou appuyez sur Espace pour bondir."
-                : phase === "won"
-                ? `Parcours terminé · Bonus +1500 · Score ${score} · Record ${best}`
-                : `Score ${score} · Record ${best}`}
+              Score {score} · Record {best}
             </p>
             <Button
               type="button"
