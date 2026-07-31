@@ -19,7 +19,7 @@ import f11 from "@/assets/run-11.png";
 import f12 from "@/assets/run-12.png";
 import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
-const musicAsset = { url: "/sky-antelope.mp3" };
+import musicAsset from "@/assets/sky-antelope.mp3.asset.json";
 
 const FRAMES = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12];
 
@@ -28,17 +28,21 @@ const FRAMES = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12];
 type Quality = "high" | "medium" | "low";
 
 const QUALITY_LIMITS: Record<Quality, { maxParticles: number; maxSwirls: number; maxClouds: number; cloudPuffs: number; analyserSkip: number; blur: boolean }> = {
+  // maxSwirls est identique partout : c'est du gameplay, pas de la décoration.
   high:   { maxParticles: 55, maxSwirls: 7, maxClouds: 4, cloudPuffs: 26, analyserSkip: 1, blur: true },
-  medium: { maxParticles: 34, maxSwirls: 5, maxClouds: 3, cloudPuffs: 18, analyserSkip: 3, blur: true },
-  low:    { maxParticles: 18, maxSwirls: 4, maxClouds: 2, cloudPuffs: 12, analyserSkip: 6, blur: false },
+  medium: { maxParticles: 34, maxSwirls: 7, maxClouds: 3, cloudPuffs: 18, analyserSkip: 3, blur: true },
+  low:    { maxParticles: 20, maxSwirls: 7, maxClouds: 2, cloudPuffs: 12, analyserSkip: 5, blur: false },
 };
 
 function detectInitialQuality(): Quality {
   if (typeof window === "undefined") return "medium";
   const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
   const cores = navigator.hardwareConcurrency || 2;
-  const isLowEnd = /Android [4-7]|iPhone OS [7-9]|iPad/.test(navigator.userAgent);
-  if (isLowEnd || (mem && mem <= 3) || cores <= 4) return "low";
+  const ua = navigator.userAgent;
+  const isLowEnd = /Android [4-7]|iPhone OS [7-9]/.test(ua);
+  // iOS ne expose pas deviceMemory : les iPhone récents sont au moins "medium".
+  const isApple = /iPhone|iPad|Macintosh/.test(ua);
+  if (isLowEnd || (mem && mem <= 3) || (!isApple && cores <= 4)) return "low";
   if ((mem && mem <= 6) || cores <= 6) return "medium";
   return "high";
 }
@@ -292,7 +296,10 @@ function makeCloudPuffs(id: number, count: number): Puff[] {
   return puffs;
 }
 
-type Phase = "idle" | "running" | "over";
+type Phase = "idle" | "running" | "over" | "won";
+
+/** Longueur du parcours, en pixels de défilement (~60 s de course). */
+const RACE_LENGTH = 26000;
 
 export default function AntelopeRunner() {
   const [phase, setPhase] = useState<Phase>("idle");
@@ -303,6 +310,7 @@ export default function AntelopeRunner() {
   const [y, setY] = useState(0);
   const [frame, setFrame] = useState(0);
   const [quality, setQuality] = useState<Quality>(() => detectInitialQuality());
+  const [progress, setProgress] = useState(0);
 
   const g = useRef({
     y: 0,
@@ -328,6 +336,7 @@ export default function AntelopeRunner() {
     t: 0,
     intensity: 0, // 0..1 — énergie de la musique (lissée)
     groundTime: 0, // temps cumulé au sol pour booster le score
+    dist: 0, // distance parcourue (px) — sert de ligne d'arrivée
     nextId: 1,
     phase: "idle" as Phase,
     // Performance monitoring
@@ -415,6 +424,7 @@ export default function AntelopeRunner() {
       t: 0,
       intensity: 0,
       groundTime: 0,
+      dist: 0,
       phase: "running",
       fpsFrames: 0,
       fpsElapsed: 0,
@@ -422,6 +432,7 @@ export default function AntelopeRunner() {
       analyserSkip: 0,
     };
     setScore(0);
+    setProgress(0);
     setY(0);
     setSpeed(340);
     setFrame(0);
@@ -528,6 +539,8 @@ export default function AntelopeRunner() {
       }
 
       s.speed = Math.min(760, s.speed + dt * 14);
+      s.dist += s.speed * dt;
+      const remainingDist = RACE_LENGTH - s.dist;
 
       // Plus l'antilope reste au sol, plus le score grimpe vite.
       const groundBonus = Math.min(s.groundTime, 3) * 0.08;
@@ -665,9 +678,12 @@ export default function AntelopeRunner() {
           for (let i = from; i < buf.length; i++) sum += buf[i];
           energy = sum / ((buf.length - from) * 255);
           energy = Math.min(1, energy * 2.6);
-        } else if (!an) {
+        }
+        if (!an || energy < 0.06) {
           // Sans analyse audio : pulsation lente pour garder des vagues intrépides.
-          energy = Math.max(0, Math.sin(s.t * 0.16) * 0.5 + 0.5) ** 2;
+          // Sans analyse audio exploitable (iOS silencieux/bloqué) : pulsation lente
+          // pour garder les vagues intrépides sur tous les appareils.
+          energy = Math.max(energy, Math.max(0, Math.sin(s.t * 0.16) * 0.5 + 0.5) ** 2);
         }
         s.intensity += (energy - s.intensity) * Math.min(1, dt * 2.2);
       }
@@ -749,7 +765,7 @@ export default function AntelopeRunner() {
 
       // Obstacles
       s.spawnIn -= dt;
-      if (s.spawnIn <= 0) {
+      if (s.spawnIn <= 0 && remainingDist > 900) {
         const kind = Math.floor(Math.random() * 3) as 0 | 1 | 2;
         const h = kind === 0 ? 26 : kind === 1 ? 38 : 52;
         s.obstacles = [
@@ -781,7 +797,21 @@ export default function AntelopeRunner() {
         });
       }
 
+      // --- Ligne d'arrivée
+      if (s.phase === "running" && s.dist >= RACE_LENGTH) {
+        s.score += 1500; // bonus d'arrivée
+        s.phase = "won";
+        setPhase("won");
+        const final = Math.floor(s.score);
+        setBest((b) => {
+          const nb = Math.max(b, final);
+          window.localStorage.setItem("antelope-best", String(nb));
+          return nb;
+        });
+      }
+
       // ---- One render tick to rule them all ----
+      setProgress(Math.min(1, s.dist / RACE_LENGTH));
       setRenderTick((n) => n + 1);
       setFrame(s.frame);
       setY(s.y);
@@ -1257,6 +1287,19 @@ export default function AntelopeRunner() {
         </div>
       </header>
 
+      {/* Progression du parcours */}
+      <div className="pointer-events-none absolute inset-x-0 top-[68px] px-4 sm:top-[84px] sm:px-6">
+        <div className="mx-auto h-1.5 w-full max-w-md overflow-hidden rounded-full bg-foreground/15">
+          <div
+            className="h-full rounded-full transition-[width] duration-150"
+            style={{ width: `${Math.round(progress * 100)}%`, backgroundImage: "var(--gradient-antelope)" }}
+          />
+        </div>
+        <p className="mt-1 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          Parcours {Math.round(progress * 100)}%
+        </p>
+      </div>
+
       <audio ref={audioRef} src={musicAsset.url} loop preload="auto" />
 
       {/* Overlays */}
@@ -1264,11 +1307,17 @@ export default function AntelopeRunner() {
         <div className="absolute inset-0 grid place-items-center bg-background/55 px-6 backdrop-blur-[2px]">
           <div className="hud-panel max-w-md rounded-3xl px-6 py-5 text-center sm:px-10 sm:py-7">
             <h1 className="text-gradient-antelope text-2xl font-black tracking-tight sm:text-4xl">
-              {phase === "idle" ? "Savanna Sprint" : "Course terminée"}
+              {phase === "idle"
+                ? "Savanna Sprint"
+                : phase === "won"
+                ? "Ligne d'arrivée !"
+                : "Course terminée"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {phase === "idle"
-                ? "Touchez l'écran ou appuyez sur Espace pour bondir."
+                ? "Parcours complet : tenez la distance jusqu'à l'arrivée. Touchez l'écran ou appuyez sur Espace pour bondir."
+                : phase === "won"
+                ? `Parcours terminé · Bonus +1500 · Score ${score} · Record ${best}`
                 : `Score ${score} · Record ${best}`}
             </p>
             <Button
@@ -1282,7 +1331,7 @@ export default function AntelopeRunner() {
               className="mt-5 rounded-full px-7 py-3 text-sm font-bold uppercase tracking-[0.18em] transition-transform hover:scale-105 active:scale-95"
               style={{ backgroundImage: "var(--gradient-antelope)", boxShadow: "var(--shadow-glow)" }}
             >
-              {phase === "idle" ? "Galoper" : "Rejouer"}
+              {phase === "idle" ? "Galoper" : phase === "won" ? "Recourir" : "Rejouer"}
             </Button>
           </div>
         </div>
