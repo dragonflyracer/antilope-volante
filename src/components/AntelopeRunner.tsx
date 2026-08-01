@@ -1135,7 +1135,7 @@ function RunnerGame() {
                       borderRadius: "50%",
                       opacity: p.o,
                       background:
-                        "radial-gradient(closest-side, #ffffff 0%, #ffffff 48%, rgba(250,252,255,0.86) 68%, rgba(232,240,251,0.42) 85%, rgba(232,240,251,0) 100%)",
+  "radial-gradient(ellipse at 35% 28%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 34%, rgba(248,252,255,0.82) 65%, rgba(232,240,251,0.28) 88%, transparent 100%)",
                     }}
                   />
                 ))}
