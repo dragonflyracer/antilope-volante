@@ -1108,7 +1108,6 @@ function RunnerGame() {
               "repeating-linear-gradient(78deg, transparent 0 46px, oklch(0.98 0.03 120) 46px 50px)",
             backgroundPositionX: `${-(scroll % 96)}px`,
             maskImage: "linear-gradient(to bottom, black, transparent 80%)",
-            filter: "blur(5px)",
             willChange: "background-position",
           }}
         />
