@@ -1099,7 +1099,6 @@ function RunnerGame() {
           className="absolute inset-x-0 top-0 h-[8px]"
           style={{
             backgroundColor: "oklch(0.24 0.16 140)",
-            filter: "blur(6px)",
           }}
         />
         <div
