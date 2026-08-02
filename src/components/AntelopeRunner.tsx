@@ -1071,7 +1071,10 @@ function RunnerGame() {
         {/* Ligne d'horizon en vert herbe naturel */}
         <div
           className="absolute inset-x-0 top-0 h-[8px]"
-          style={{ backgroundColor: "oklch(0.24 0.16 140)" }}
+          style={{
+            backgroundColor: "oklch(0.24 0.16 140)",
+            filter: "blur(6px)",
+          }}
         />
         <div
           className="absolute inset-0 opacity-[0.14]"
@@ -1080,6 +1083,7 @@ function RunnerGame() {
               "repeating-linear-gradient(78deg, transparent 0 46px, oklch(0.98 0.03 120) 46px 50px)",
             backgroundPositionX: `${-(scroll % 96)}px`,
             maskImage: "linear-gradient(to bottom, black, transparent 80%)",
+            filter: "blur(5px)",
             willChange: "background-position",
           }}
         />

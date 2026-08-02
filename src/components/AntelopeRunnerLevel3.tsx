@@ -4,6 +4,7 @@ import hillsImg from "@/assets/day-hills.png";
 import grassBackImg from "@/assets/grass-back.png";
 import grassFrontImg from "@/assets/grass-front.png";
 import cloudsImg from "@/assets/cloud-pillars.png";
+import floatingCliffImg from "@/assets/floating-cliff.png";
 
 import f1 from "@/assets/run-01.png";
 import f2 from "@/assets/run-02.png";
@@ -75,7 +76,9 @@ function ParallaxLayer({
             className={`absolute ${className}`}
             style={{
               ...style,
-              width: "100%",
+              width: "170%",
+              left: "-35%",
+              bottom: "-5%",
               transform: `translateX(${(offset - 1) * 100}%) scaleX(${i % 2 === 0 ? 1 : -1})`,
               backgroundImage: `url(${src})`,
               backgroundSize: size,
@@ -632,7 +635,7 @@ function RunnerGame() {
   }, [jump, releaseJump]);
 
   useEffect(() => {
-    const stored = Number(window.localStorage.getItem("antelope-best-level2") ?? 0);
+    const stored = Number(window.localStorage.getItem("antelope-best-level3") ?? 0);
     if (!Number.isNaN(stored)) setBest(stored);
   }, []);
 
@@ -956,7 +959,7 @@ function RunnerGame() {
         const final = Math.floor(s.score);
         setBest((b) => {
           const nb = Math.max(b, final);
-          window.localStorage.setItem("antelope-best-level2", String(nb));
+          window.localStorage.setItem("antelope-best-level3", String(nb));
           return nb;
         });
       }
@@ -969,7 +972,7 @@ function RunnerGame() {
         const final = Math.floor(s.score);
         setBest((b) => {
           const nb = Math.max(b, final);
-          window.localStorage.setItem("antelope-best-level2", String(nb));
+          window.localStorage.setItem("antelope-best-level3", String(nb));
           return nb;
         });
       }
@@ -988,6 +991,8 @@ function RunnerGame() {
 
   // Derived render lists — read from refs to avoid extra state allocations.
   const { obstacles, clouds, particles, swirls, scroll } = g.current;
+  const angle = Math.sin(scroll * 0.0012) * 18;
+  const cloudAngle = Math.sin(scroll * 0.0008) * 12;
 
   return (
     <div
@@ -1025,21 +1030,33 @@ function RunnerGame() {
         />
 
         {/* 2b. Colonnes de nuages majestueuses — passent devant les collines */}
-        <ParallaxLayer
-          src={cloudsImg}
-          scroll={scroll}
-          k={0.00042}
-          size="100% 100%"
-          className="inset-x-0 opacity-95"
+
+        <div
           style={{
-            bottom: `${((H - GROUND_Y) / H) * 100 - 2}%`,
-            height: "72%",
-            backgroundPosition: "bottom",
-            filter: limits.blur ? "blur(3px) saturate(0.85) brightness(1.06)" : "saturate(0.85) brightness(1.06)",
-            maskImage:
-              "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+            position: "absolute",
+            inset: 0,
+            transform: `rotate(${angle}deg)`,
+            transformOrigin: "center center",
+            pointerEvents: "none",
           }}
-        />
+        >
+          <ParallaxLayer
+            src={cloudsImg}
+            scroll={scroll}
+            k={0.00042}
+            size="100% 100%"
+            className="inset-x-0 opacity-95"
+            style={{
+              bottom: `${((H - GROUND_Y) / H) * 100 - 2}%`,
+              height: "72%",
+              backgroundPosition: "bottom",
+              filter: limits.blur ? "blur(3px) saturate(0.85) brightness(1.06)" : "saturate(0.85) brightness(1.06)",
+              maskImage:
+                "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+            }}
+          />
+
+        </div>
 
         {/* Brume d'horizon verte et douce */}
         <div
@@ -1050,6 +1067,23 @@ function RunnerGame() {
               "linear-gradient(to top, oklch(0.55 0.08 135 / 22%), transparent)",
           }}
         />
+
+                    {/* Falaise flottante */}
+      <div
+        className="pointer-events-none absolute"
+        style={{
+          left: "-10%",
+          bottom: "-15%",
+          width: "140%",
+          height: "45%",
+          backgroundImage: `url(${floatingCliffImg})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "100% 100%",
+          transform: `rotate(${angle}deg)`,
+          transformOrigin: "50% 0%",
+          zIndex: 0,
+        }}
+      />
 
         {/* 3. Hautes herbes — derrière l'antilope */}
         <ParallaxLayer
@@ -1088,10 +1122,7 @@ function RunnerGame() {
         {/* Ligne d'horizon en vert herbe naturel */}
         <div
           className="absolute inset-x-0 top-0 h-[8px]"
-          style={{
-            backgroundColor: "oklch(0.24 0.16 140)",
-            filter: "blur(6px)",
-          }}
+          style={{ backgroundColor: "oklch(0.24 0.16 140)" }}
         />
         <div
           className="absolute inset-0 opacity-[0.14]"
@@ -1100,7 +1131,6 @@ function RunnerGame() {
               "repeating-linear-gradient(78deg, transparent 0 46px, oklch(0.98 0.03 120) 46px 50px)",
             backgroundPositionX: `${-(scroll % 96)}px`,
             maskImage: "linear-gradient(to bottom, black, transparent 80%)",
-            filter: "blur(5px)",
             willChange: "background-position",
           }}
         />
