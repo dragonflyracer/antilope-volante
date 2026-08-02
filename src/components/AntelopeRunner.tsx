@@ -566,14 +566,23 @@ function RunnerGame() {
 
     if (navigator.share && shareUrl) {
       try {
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
         const shareData: ShareData = {
           title: "L'Antilope volante",
           text: shareText,
           url: shareUrl,
         };
-        if (scoreFile && navigator.canShare?.({ files: [scoreFile] })) {
+
+        // On ne joint l'image que sur iOS.
+        if (
+          isIOS &&
+          scoreFile &&
+          navigator.canShare?.({ files: [scoreFile] })
+        ) {
           shareData.files = [scoreFile];
         }
+
         await navigator.share(shareData);
         return;
       } catch (error) {
