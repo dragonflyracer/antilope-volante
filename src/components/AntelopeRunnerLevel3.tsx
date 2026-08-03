@@ -792,9 +792,11 @@ function RunnerGame() {
       }
 
       s.clouds = s.clouds
-        .map((c) => ({ ...c, x: c.x - s.speed * dt }))
-        .filter((c) => c.x + c.w > -140)
-        .slice(-limits.maxClouds);
+        .map((c) => ({
+          ...c,
+          x: c.x - s.speed * dt,
+        }))
+        .filter((c) => c.x + c.w > -140);
 
       // Support courant : le sol, ou le dessus d'un nuage traversé en descendant
       const cx = RUNNER_X + 20;
