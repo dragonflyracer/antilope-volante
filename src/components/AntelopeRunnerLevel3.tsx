@@ -252,7 +252,7 @@ const BLACK_SWIRL_VALUE = -300;
 const CLOUD_THICK = 34;
 
 // On abaisse la surface de marche invisible pour que les sabots touchent le corps du nuage.
-const CLOUD_PLATFORM_OFFSET = 38;
+const CLOUD_PLATFORM_OFFSET = 98;
 
 /** Opacité douce à l'entrée et à la sortie de l'écran (pas d'apparition/disparition sèche). */
 const cloudOpacity = (x: number, w: number) => {
@@ -265,43 +265,22 @@ const cloudOpacity = (x: number, w: number) => {
 };
 
 /** Génère une silhouette de nuage bosselée une seule fois à la création. */
-function makeCloudPuffs(id: number, count: number): Puff[] {
+function makeCloudPuffs(id: number): Puff[] {
   const rnd = (k: number) =>
     Math.abs(Math.sin(id * 12.9898 + k * 78.233) * 43758.5453) % 1;
+
   const puffs: Puff[] = [];
-  const addRow = (
-    key: number,
-    n: number,
-    from: number,
-    to: number,
-    top: number,
-    wMin: number,
-    wMax: number,
-    hRatio: number,
-    opacity: number,
-  ) => {
-    for (let i = 0; i < n; i++) {
-      const p = n === 1 ? 0.5 : i / (n - 1);
-      const jitter = (rnd(key * 13 + i) - 0.5) * ((to - from) / n) * 0.9;
-      const w = wMin + rnd(key * 29 + i) * (wMax - wMin);
-      const h = w * hRatio * (0.8 + rnd(key * 37 + i) * 0.5);
-      puffs.push({
-        l: from + p * (to - from) + jitter - w / 2,
-        t: top + (rnd(key * 41 + i) - 0.5) * 9,
-        w,
-        h,
-        o: opacity * (0.82 + rnd(key * 53 + i) * 0.25),
-      });
-    }
-  };
-  // Chapeau (sommet à peu près plat mais bosselé)
-  addRow(1, Math.ceil(count * 0.23), 6, 94, 6, 34, 52, 0.62, 1);
-  addRow(2, Math.ceil(count * 0.15), 14, 86, 20, 34, 50, 0.7, 0.98);
-  // Corps qui s'élargit
-  addRow(3, Math.ceil(count * 0.19), -18, 118, 40, 42, 62, 0.68, 0.95);
-  addRow(4, Math.ceil(count * 0.18), -42, 142, 62, 46, 70, 0.66, 0.9);
-  // Jupe basse très large qui se dissout dans le sol
-  addRow(5, Math.ceil(count * 0.12), -70, 170, 86, 58, 92, 0.62, 0.82);
+
+  for (let i = 0; i < 6; i++) {
+    puffs.push({
+      l: -20 + rnd(i * 3) * 120,
+      t: 10 + rnd(i * 7) * 55,
+      w: 70 + rnd(i * 11) * 65,
+      h: 45 + rnd(i * 13) * 40,
+      o: 0.82 + rnd(i * 17) * 0.18,
+    });
+  }
+
   return puffs;
 }
 
@@ -778,7 +757,7 @@ function RunnerGame() {
             x: W + 140 + offset,
             w,
             top,
-            puffs: makeCloudPuffs(id, limits.cloudPuffs),
+            puffs: makeCloudPuffs(id),
           });
         }
 
