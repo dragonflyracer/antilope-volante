@@ -16,7 +16,7 @@ import f11 from "@/assets/run-11.png";
 import f12 from "@/assets/run-12.png";
 import { Button } from "@/components/ui/button";
 import { Share2, Volume2, VolumeX } from "lucide-react";
-const musicAsset = { url: "/sky-antelope.mp3" };
+const musicAsset = { url: "/antilope-sky3.mp3" };
 
 const FRAMES = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12];
 
