@@ -295,14 +295,13 @@ function makeCloudPuffs(id: number, count: number): Puff[] {
     }
   };
   // Chapeau (sommet à peu près plat mais bosselé)
-  addRow(1, Math.ceil(count * 0.23), 6, 94, 6, 30, 44, 0.62, 1);
+  addRow(1, Math.ceil(count * 0.23), 6, 94, 6, 34, 52, 0.62, 1);
   addRow(2, Math.ceil(count * 0.15), 14, 86, 20, 34, 50, 0.7, 0.98);
   // Corps qui s'élargit
   addRow(3, Math.ceil(count * 0.19), -18, 118, 40, 42, 62, 0.68, 0.95);
   addRow(4, Math.ceil(count * 0.18), -42, 142, 62, 46, 70, 0.66, 0.9);
   // Jupe basse très large qui se dissout dans le sol
-  addRow(5, Math.ceil(count * 0.15), -70, 170, 86, 52, 82, 0.6, 0.85);
-  addRow(6, Math.max(1, count - puffs.length), -95, 195, 104, 58, 90, 0.55, 0.7);
+  addRow(5, Math.ceil(count * 0.12), -70, 170, 86, 58, 92, 0.62, 0.82);
   return puffs;
 }
 
