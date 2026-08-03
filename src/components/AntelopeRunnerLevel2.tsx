@@ -1146,7 +1146,7 @@ function RunnerGame() {
                   opacity: cloudOpacity(c.x, c.w) * 0.92,
                   transition: "opacity 0.28s ease-out",
                   filter: limits.blur
-                    ? "blur(8px) drop-shadow(0 12px 34px oklch(0.55 0.08 250 / 14%))"
+                    ? "blur(5px) drop-shadow(0 12px 34px oklch(0.55 0.08 250 / 14%))"
                     : "drop-shadow(0 12px 34px oklch(0.55 0.08 250 / 14%))",
                   willChange: "transform, opacity",
                 }}
@@ -1162,6 +1162,7 @@ function RunnerGame() {
                       height: `${p.h}%`,
                       borderRadius: "50%",
                       opacity: p.o,
+                      filter: "blur(6px)",
                       background:
   "radial-gradient(ellipse at 35% 28%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 34%, rgba(248,252,255,0.82) 65%, rgba(232,240,251,0.28) 88%, transparent 100%)",
                     }}
