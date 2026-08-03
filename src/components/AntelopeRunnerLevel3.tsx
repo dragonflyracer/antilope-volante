@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import skyImg from "@/assets/day-sky.jpg";
-import hillsImg from "@/assets/day-hills.png";
-import grassBackImg from "@/assets/grass-back.png";
-import grassFrontImg from "@/assets/grass-front.png";
-import cloudsImg from "@/assets/cloud-pillars.png";
-import floatingCliffImg from "@/assets/floating-cliff.png";
+import cloudsImg from "@/assets/sky3.png";
 
 import f1 from "@/assets/run-01.png";
 import f2 from "@/assets/run-02.png";
@@ -30,9 +26,9 @@ type Quality = "high" | "medium" | "low";
 
 const QUALITY_LIMITS: Record<Quality, { maxParticles: number; maxSwirls: number; maxClouds: number; cloudPuffs: number; analyserSkip: number; blur: boolean }> = {
   // maxSwirls est identique partout : c'est du gameplay, pas de la décoration.
-  high:   { maxParticles: 55, maxSwirls: 7, maxClouds: 4, cloudPuffs: 26, analyserSkip: 1, blur: true },
-  medium: { maxParticles: 34, maxSwirls: 7, maxClouds: 3, cloudPuffs: 18, analyserSkip: 3, blur: true },
-  low:    { maxParticles: 20, maxSwirls: 7, maxClouds: 2, cloudPuffs: 12, analyserSkip: 5, blur: false },
+  high:   { maxParticles: 55, maxSwirls: 7, maxClouds: 12, cloudPuffs: 26, analyserSkip: 1, blur: true },
+  medium: { maxParticles: 34, maxSwirls: 7, maxClouds: 10, cloudPuffs: 18, analyserSkip: 3, blur: true },
+  low:    { maxParticles: 20, maxSwirls: 7, maxClouds: 8, cloudPuffs: 12, analyserSkip: 5, blur: false },
 };
 
 function detectInitialQuality(): Quality {
@@ -76,9 +72,7 @@ function ParallaxLayer({
             className={`absolute ${className}`}
             style={{
               ...style,
-              width: "170%",
-              left: "-35%",
-              bottom: "-5%",
+              width: "100%",
               transform: `translateX(${(offset - 1) * 100}%) scaleX(${i % 2 === 0 ? 1 : -1})`,
               backgroundImage: `url(${src})`,
               backgroundSize: size,
@@ -133,7 +127,7 @@ function StrangePlant({
       className="absolute"
       style={{
         left: `${(x / W) * 100}%`,
-        bottom: `${((H - GROUND_Y) / H) * 100}%`,
+        bottom: `bottom: "-5%",`,
         width: `${(w / W) * 100}%`,
         height: `${(h / H) * 100}%`,
         filter: kind === 2 ? "hue-rotate(-18deg)" : undefined,
@@ -237,15 +231,28 @@ type Cloud = { id: number; x: number; w: number; top: number; puffs: Puff[] };
 type Particle = { id: number; x: number; y: number; vx: number; vy: number; life: number; maxLife: number; size: number; hue?: number };
 
 /** Petit tourbillon à attraper : rend des points pour compenser le temps en l'air. */
-type Swirl = { id: number; x: number; y: number; size: number; phase: number; blue?: boolean; red?: boolean; baseY?: number; amp?: number; freq?: number };
+type Swirl = {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  phase: number;
+  blue?: boolean;
+  red?: boolean;
+  black?: boolean;
+  baseY?: number;
+  amp?: number;
+  freq?: number;
+};
 const SWIRL_VALUE = 60;
 const BLUE_SWIRL_VALUE = 200;
 /** Galaxies rouges : elles n'arrivent que dans les montées d'intensité de la musique. */
 const RED_SWIRL_VALUE = 450;
+const BLACK_SWIRL_VALUE = -300;
 const CLOUD_THICK = 34;
 
 // On abaisse la surface de marche invisible pour que les sabots touchent le corps du nuage.
-const CLOUD_PLATFORM_OFFSET = 18;
+const CLOUD_PLATFORM_OFFSET = 38;
 
 /** Opacité douce à l'entrée et à la sortie de l'écran (pas d'apparition/disparition sèche). */
 const cloudOpacity = (x: number, w: number) => {
@@ -377,11 +384,12 @@ function RunnerGame() {
   const [frame, setFrame] = useState(0);
   const [quality, setQuality] = useState<Quality>(() => detectInitialQuality());
   const [progress, setProgress] = useState(0);
+  const [flash, setFlash] = useState(0);
 
   const g = useRef({
-    y: 0,
+    y: 140,
     vy: 0,
-    grounded: true,
+    grounded: false,
     holding: false,
     holdT: 0,
     jumps: 0,
@@ -471,17 +479,26 @@ function RunnerGame() {
     void audioCtxRef.current?.resume().catch(() => {});
     g.current = {
       ...g.current,
-      y: 0,
+      y: 140,
       vy: 0,
-      grounded: true,
+      grounded: false,
       jumps: 0,
       scroll: 0,
       speed: 340,
       score: 0,
       spawnIn: 1.1,
       obstacles: [],
-      clouds: [],
-      cloudIn: 3,
+      clouds: [
+        {
+          id: 1,
+          x: RUNNER_X - 40,
+          w: 640,
+          top: 140,
+          puffs: makeCloudPuffs(1, limits.cloudPuffs),
+        },
+      ],
+      cloudIn: 2.5,
+      nextId: 2,
       support: 0,
       particles: [],
       particleIn: 0,
@@ -569,14 +586,23 @@ function RunnerGame() {
 
     if (navigator.share && shareUrl) {
       try {
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
         const shareData: ShareData = {
           title: "L'Antilope volante",
           text: shareText,
           url: shareUrl,
         };
-        if (scoreFile && navigator.canShare?.({ files: [scoreFile] })) {
+
+        // On ne joint l'image que sur iOS.
+        if (
+          isIOS &&
+          scoreFile &&
+          navigator.canShare?.({ files: [scoreFile] })
+        ) {
           shareData.files = [scoreFile];
         }
+
         await navigator.share(shareData);
         return;
       } catch (error) {
@@ -714,20 +740,57 @@ function RunnerGame() {
 
       // --- Nuages plateformes : défilement + spawn
       s.cloudIn -= dt;
+
       if (s.cloudIn <= 0) {
-        const w = 300 + Math.random() * 240;
-        s.clouds = [
-          ...s.clouds,
-          {
-            id: s.nextId++,
-            x: W + 140,
+
+        // Nombre de plateformes dans cette formation
+        const count = [0, 1, 1, 2, 2, 3, 4][Math.floor(Math.random() * 7)];
+
+        let offset = 0;
+
+        // On part de la dernière hauteur connue
+        let lastTop =
+          s.clouds.length > 0
+            ? s.clouds[s.clouds.length - 1].top
+            : 140;
+
+        for (let i = 0; i < count; i++) {
+
+          // Espacement irrégulier
+          offset += 100 + Math.random() * 380;
+
+          // Monte ou descend franchement
+          const delta = [-140, -90, -50, 0, 50, 90, 140][
+            Math.floor(Math.random() * 7)
+          ];
+
+          let top = lastTop + delta;
+
+          // Reste dans l'écran
+          top = Math.max(15, Math.min(260, top));
+
+          lastTop = top;
+
+          const id = s.nextId++;
+          const w = 220 + Math.random() * 280;
+
+          s.clouds.push({
+            id,
+            x: W + 140 + offset,
             w,
-            top: 62 + Math.random() * 46,
-            puffs: makeCloudPuffs(s.nextId, limits.cloudPuffs),
-          },
-        ];
-        s.cloudIn = 4 + Math.random() * 3;
+            top,
+            puffs: makeCloudPuffs(id, limits.cloudPuffs),
+          });
+        }
+
+        // Parfois un grand vide
+        if (Math.random() < 0.25) {
+          s.cloudIn = 4.5 + Math.random() * 2.5;
+        } else {
+          s.cloudIn = 1.2 + Math.random() * 2.0;
+        }
       }
+
       s.clouds = s.clouds
         .map((c) => ({ ...c, x: c.x - s.speed * dt }))
         .filter((c) => c.x + c.w > -140)
@@ -766,13 +829,18 @@ function RunnerGame() {
           s.grounded = false;
         }
       }
-      if (s.y <= 0) {
-        s.y = 0;
-        s.vy = 0;
-        s.grounded = true;
-        s.jumps = 0;
-        s.holding = false;
-        s.support = 0;
+      if (s.y < -120) {
+        s.phase = "over";
+        setPhase("over");
+
+        const final = Math.floor(s.score);
+        setBest((b) => {
+          const nb = Math.max(b, final);
+          window.localStorage.setItem("antelope-best-level3", String(nb));
+          return nb;
+        });
+
+        return;
       }
 
       // Gestion du bonus au sol : plus on reste grounded, plus groundTime monte.
@@ -844,20 +912,24 @@ function RunnerGame() {
       s.swirlIn -= dt;
       if (s.swirlIn <= 0) {
         const r = Math.random();
+
         const redChance =
-            0.45 +
-            raceProgress * 0.35;
+          0.45 + raceProgress * 0.35;
 
-            const red =
-            intense &&
-            r < Math.min(0.92, redChance);
+        const red =
+          intense &&
+          r < Math.min(0.92, redChance);
+
         const blueChance =
-            (intense ? 0.75 : 0.30) +
-            raceProgress * 0.18;
+          (intense ? 0.75 : 0.30) +
+          raceProgress * 0.18;
 
-            const blue =
-            !red &&
-            r < Math.min(0.95, blueChance);
+        const blue =
+          !red &&
+          r < Math.min(0.95, blueChance);
+
+        // 12 % des tourbillons normaux deviennent noirs
+        const black = Math.random() < 0.5;
         const size = red ? 26 + Math.random() * 14 : blue ? 30 + Math.random() * 16 : 34 + Math.random() * 20;
         const y = 30 + Math.random() * 210;
         s.swirls = [
@@ -868,7 +940,9 @@ function RunnerGame() {
             y,
             size,
             phase: Math.random() * Math.PI * 2,
-            ...(red
+            ...(black
+              ? { black: true }
+              : red
               ? { red: true, baseY: y, amp: 55 + Math.random() * 70, freq: 2.2 + Math.random() * 1.8 }
               : blue
               ? { blue: true, baseY: y, amp: 40 + Math.random() * 55, freq: 1.2 + Math.random() * 1.1 }
@@ -903,7 +977,23 @@ function RunnerGame() {
           const dx = sw.x + sw.size / 2 - cx;
           const dy = swy + sw.size / 2 - cy;
           if (Math.hypot(dx, dy) < sw.size * 0.6 + RUNNER_H * 0.35) {
-            s.score += sw.red ? RED_SWIRL_VALUE : sw.blue ? BLUE_SWIRL_VALUE : SWIRL_VALUE;
+            s.score += sw.black
+              ? BLACK_SWIRL_VALUE
+              : sw.red
+              ? RED_SWIRL_VALUE
+              : sw.blue
+              ? BLUE_SWIRL_VALUE
+              : SWIRL_VALUE;
+
+            s.score = Math.max(0, s.score);
+
+            if (sw.black) {
+              setFlash(1);
+
+              setTimeout(() => {
+                setFlash(0);
+              }, 80);
+            }
             const burst: Particle[] = [];
             const n = Math.min(sw.red ? 32 : sw.blue ? 24 : 16, limits.maxParticles - s.particles.length);
             for (let i = 0; i < n; i++) {
@@ -929,21 +1019,6 @@ function RunnerGame() {
         }
         s.swirls = remaining;
       }
-
-      // Obstacles
-      s.spawnIn -= dt;
-      if (s.spawnIn <= 0 && remainingDist > 900) {
-        const kind = Math.floor(Math.random() * 3) as 0 | 1 | 2;
-        const h = kind === 0 ? 26 : kind === 1 ? 38 : 52;
-        s.obstacles = [
-          ...s.obstacles,
-          { id: s.nextId++, x: W + 80, w: kind === 2 ? 26 : 22, h, kind },
-        ];
-        s.spawnIn = 0.75 + Math.random() * 0.9 - Math.min(0.35, s.speed / 2400);
-      }
-      s.obstacles = s.obstacles
-        .map((o) => ({ ...o, x: o.x - s.speed * dt }))
-        .filter((o) => o.x > -120);
 
       // Collision — forgiving hitbox around the antelope body.
       const rx = RUNNER_X + 20;
@@ -984,6 +1059,7 @@ function RunnerGame() {
       setY(s.y);
       setSpeed(s.speed);
       setScore(Math.floor(s.score));
+
     };
     raf.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf.current);
@@ -991,12 +1067,13 @@ function RunnerGame() {
 
   // Derived render lists — read from refs to avoid extra state allocations.
   const { obstacles, clouds, particles, swirls, scroll } = g.current;
-  const angle = Math.sin(scroll * 0.0012) * 18;
-  const cloudAngle = Math.sin(scroll * 0.0008) * 12;
 
   return (
     <div
-      className="relative h-full w-full touch-none select-none overflow-hidden bg-background"
+      className="relative h-full w-full touch-none select-none overflow-hidden"
+      style={{
+        background: phase === "idle" ? "#fff" : undefined,
+      }}
       onPointerDown={jump}
       onPointerUp={releaseJump}
       onPointerCancel={releaseJump}
@@ -1012,146 +1089,43 @@ function RunnerGame() {
           contain: "layout style paint",
         }}
       >
+        {phase !== "idle" && (
+           <>
         {/* 1. Ciel de jour — dérive très lente */}
-        <ParallaxLayer src={skyImg} scroll={scroll} k={0.00006} className="inset-0" size="cover" />
-
-        {/* 2. Collines douces — vitesse moyenne */}
         <ParallaxLayer
-          src={hillsImg}
+          src={skyImg}
           scroll={scroll}
-          k={0.00026}
-          className="inset-x-0"
-          style={{
-            bottom: `${((H - GROUND_Y) / H) * 100}%`,
-            height: "28%",
-            backgroundPosition: "bottom",
-            filter: "saturate(1.1) brightness(0.98)",
-          }}
+          k={0.00006}
+          className="inset-0"
+          size="cover"
         />
 
         {/* 2b. Colonnes de nuages majestueuses — passent devant les collines */}
-
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            transform: `rotate(${angle}deg)`,
-            transformOrigin: "center center",
-            pointerEvents: "none",
-          }}
-        >
-          <ParallaxLayer
-            src={cloudsImg}
-            scroll={scroll}
-            k={0.00042}
-            size="100% 100%"
-            className="inset-x-0 opacity-95"
-            style={{
-              bottom: `${((H - GROUND_Y) / H) * 100 - 2}%`,
-              height: "72%",
-              backgroundPosition: "bottom",
-              filter: limits.blur ? "blur(3px) saturate(0.85) brightness(1.06)" : "saturate(0.85) brightness(1.06)",
-              maskImage:
-                "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
-            }}
-          />
-
-        </div>
-
-        {/* Brume d'horizon verte et douce */}
-        <div
-          className="absolute inset-x-0 h-[18%]"
-          style={{
-            bottom: `${((H - GROUND_Y) / H) * 100}%`,
-            background:
-              "linear-gradient(to top, oklch(0.55 0.08 135 / 22%), transparent)",
-          }}
-        />
-
-                    {/* Falaise flottante */}
-      <div
-        className="pointer-events-none absolute"
-        style={{
-          left: "-10%",
-          bottom: "-15%",
-          width: "140%",
-          height: "45%",
-          backgroundImage: `url(${floatingCliffImg})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "100% 100%",
-          transform: `rotate(${angle}deg)`,
-          transformOrigin: "50% 0%",
-          zIndex: 0,
-        }}
-      />
-
-        {/* 3. Hautes herbes — derrière l'antilope */}
         <ParallaxLayer
-          src={grassBackImg}
+          src={cloudsImg}
           scroll={scroll}
-          k={0.0007}
-          className="inset-x-0"
+          k={0.00042}
+          size="110% 100%"
+          className="inset-x-0 opacity-95"
           style={{
-            bottom: `calc(${((H - GROUND_Y) / H) * 100}% - 26px)`,
-            height: "24%",
-            backgroundPosition: "bottom",
-            filter: "saturate(1.05) brightness(1.02)",
+            bottom: "-28%",
+            height: "145%",
+            backgroundPosition: "center bottom",
+            backgroundSize: "100% auto",
+            filter: limits.blur ? "blur(6px) saturate(0.85) brightness(1.06)" : "saturate(0.85) brightness(1.06)",
+            maskImage:
+              "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
           }}
         />
-
-        {/* Transition herbes → sol pour masquer la ligne blanche */}
-        <div
-          className="pointer-events-none absolute inset-x-0"
-          style={{
-            bottom: `${((H - GROUND_Y) / H) * 100}%`,
-            height: "32px",
-            background: "linear-gradient(to top, var(--ground), transparent)",
-          }}
-        />
-      </div>
-
-      {/* Ground */}
-      <div
-        className="absolute inset-x-0 bottom-0"
-        style={{
-          height: `${((H - GROUND_Y) / H) * 100}%`,
-          background: `linear-gradient(to bottom, oklch(0.35 0.13 140), var(--ground) 22%)`,
-          contain: "layout style paint",
-        }}
-      >
-        {/* Ligne d'horizon en vert herbe naturel */}
-        <div
-          className="absolute inset-x-0 top-0 h-[8px]"
-          style={{ backgroundColor: "oklch(0.24 0.16 140)" }}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.14]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(78deg, transparent 0 46px, oklch(0.98 0.03 120) 46px 50px)",
-            backgroundPositionX: `${-(scroll % 96)}px`,
-            maskImage: "linear-gradient(to bottom, black, transparent 80%)",
-            willChange: "background-position",
-          }}
-        />
-      </div>
-
+        </>
+      )}
+      </div> 
       {/* Playfield in virtual units */}
       <div
         className="absolute inset-0"
         style={{ contain: "layout style paint" }}
       >
         <div className="relative h-full w-full">
-          {obstacles.map((o) => (
-            <StrangePlant
-              key={o.id}
-              x={o.x}
-              w={o.w}
-              h={o.h}
-              kind={o.kind}
-            />
-          ))}
-
           {/* Plateformes de nuage */}
           {clouds.map((c) => {
             const base = 44; // le nuage plonge sous le sol : il l'englobe
@@ -1163,7 +1137,7 @@ function RunnerGame() {
                 className="absolute"
                 style={{
                   left: `${(c.x / W) * 100}%`,
-                  bottom: `${((H - GROUND_Y - base) / H) * 100}%`,
+                  bottom: "-10%",
                   width: `${(c.w / W) * 100}%`,
                   height: `${(hPx / H) * 100}%`,
                   opacity: cloudOpacity(c.x, c.w) * 0.92,
@@ -1208,7 +1182,7 @@ function RunnerGame() {
               }
               style={{
                 left: `${(sw.x / W) * 100}%`,
-                bottom: `calc(${((H - GROUND_Y - GROUND_SINK) / H) * 100}% + ${(sw.y / H) * 100}%)`,
+                bottom: `${(sw.y / H) * 100}%`,
                 width: `${(sw.size / W) * 100}%`,
                 aspectRatio: "1 / 1",
                 pointerEvents: "none",
@@ -1216,14 +1190,24 @@ function RunnerGame() {
                 filter: sw.red
                   ? "drop-shadow(0 0 18px oklch(0.65 0.25 27 / 85%))"
                   : sw.blue
-                  ? "drop-shadow(0 0 14px oklch(0.75 0.19 240 / 80%))"
-                  : "drop-shadow(0 0 10px oklch(0.75 0.2 350 / 65%))",
-              }}
+                    ? "drop-shadow(0 0 14px oklch(0.75 0.19 240 / 80%))"
+                    : sw.black
+                      ? "drop-shadow(0 0 16px rgba(0,0,0,.8))"
+                      : "drop-shadow(0 0 10px oklch(0.75 0.2 350 / 65%))"
+                }}
             >
               <svg viewBox="0 0 100 100" className="h-full w-full overflow-visible">
                 <defs>
                   <linearGradient id={`sw-${sw.id}`} x1="0" y1="0" x2="1" y2="1">
-                    {sw.red ? (
+                    {sw.black ? (
+                      <>
+                        <stop offset="0%" stopColor="#ffffff" />
+                        <stop offset="10%" stopColor="#bcbcbc" />
+                        <stop offset="35%" stopColor="#5f5f5f" />
+                        <stop offset="70%" stopColor="#111111" />
+                        <stop offset="100%" stopColor="#ffffff" />
+                      </>
+                    ) : sw.red ? (
                       <>
                         <stop offset="0%" stopColor="oklch(0.94 0.09 60)" />
                         <stop offset="40%" stopColor="oklch(0.78 0.2 40)" />
@@ -1351,7 +1335,7 @@ function RunnerGame() {
                 className="absolute rounded-full"
                 style={{
                   left: `${(p.x / W) * 100}%`,
-                  bottom: `calc(${((H - GROUND_Y - GROUND_SINK) / H) * 100}% + ${(p.y / H) * 100}%)`,
+                  bottom: `${(p.y / H) * 100}%`,
                   width: `${(p.size / W) * 100}%`,
                   aspectRatio: "1 / 1",
                   opacity: progress * 0.9,
@@ -1370,12 +1354,24 @@ function RunnerGame() {
             );
           })}
 
+          {flash > 0 && (
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background: "#fff",
+                  opacity: flash,
+                  mixBlendMode: "screen",
+                  zIndex: 9999,
+                }}
+              />
+            )}
+
           {/* Antelope */}
           <div
             className="absolute"
             style={{
               left: `${(RUNNER_X / W) * 100}%`,
-              bottom: `calc(${((H - GROUND_Y - GROUND_SINK) / H) * 100}% + ${(y / H) * 100}%)`,
+              bottom: `${(y / H) * 100}%`,
               width: `${(RUNNER_W / W) * 100}%`,
               height: `${(RUNNER_H / H) * 100}%`,
               willChange: "transform",
@@ -1414,21 +1410,6 @@ function RunnerGame() {
             )}
           </div>
         </div>
-      </div>
-
-      {/* 4. Hautes herbes de premier plan — devant l'antilope */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <ParallaxLayer
-          src={grassFrontImg}
-          scroll={scroll}
-          k={0.0016}
-          className="inset-x-0 bottom-0"
-          style={{
-            height: "17%",
-            backgroundPosition: "bottom",
-            filter: "saturate(1.1) brightness(0.95)",
-          }}
-        />
       </div>
 
       {/* HUD */}
@@ -1492,7 +1473,9 @@ function RunnerGame() {
       {phase !== "running" && (
         <div
           className={`absolute inset-0 grid place-items-center px-6 ${
-            phase === "idle" ? "bg-background/55 backdrop-blur-[2px]" : "bg-white"
+            phase === "idle"
+              ? "bg-background/55 backdrop-blur-[2px]"
+              : "bg-white"
           }`}
         >
           <div className="hud-panel max-w-md rounded-3xl px-6 py-5 text-center sm:px-10 sm:py-7">
