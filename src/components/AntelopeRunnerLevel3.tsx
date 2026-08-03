@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import skyImg from "@/assets/day-sky.jpg";
-import cloudsImg from "@/assets/sky3.png";
+import cloudsImg from "@/assets/cloud-pillars.png";
 
 import f1 from "@/assets/run-01.png";
 import f2 from "@/assets/run-02.png";
