@@ -944,13 +944,13 @@ function RunnerGame() {
             ...(black
               ? { black: true }
               : red
-              ? { red: true, baseY: y, amp: 95 + Math.random() * 70, freq: 2.8 + Math.random() * 2.2 }
+              ? { red: true, baseY: y, amp: 55 + Math.random() * 70, freq: 2.8 + Math.random() * 2 }
               : blue
-              ? { blue: true, baseY: y, amp: 20 + Math.random() * 55, freq: 1.8 + Math.random() * 1.4 }
+              ? { blue: true, baseY: y, amp: 40 + Math.random() * 55, freq: 1.8 + Math.random() * 1.1 }
               : {}),
           },
         ];
-        const spawnBoost = 1 - raceProgress * 0.75;
+        const spawnBoost = 1 - raceProgress * 0.55;
 
         s.swirlIn = intense
         ? (0.28 + Math.random() * 0.5) * spawnBoost
