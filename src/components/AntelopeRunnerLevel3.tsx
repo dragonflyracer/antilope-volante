@@ -929,26 +929,45 @@ function RunnerGame() {
           r < Math.min(0.95, blueChance);
 
         // 12 % des tourbillons normaux deviennent noirs
-        const black = Math.random() < 0.5;
-        const size = red ? 26 + Math.random() * 14 : blue ? 30 + Math.random() * 16 : 34 + Math.random() * 20;
-        const y = 30 + Math.random() * 210;
-        s.swirls = [
-          ...s.swirls,
-          {
-            id: s.nextId++,
-            x: W + 60,
-            y,
-            size,
-            phase: Math.random() * Math.PI * 2,
-            ...(black
-              ? { black: true }
-              : red
-              ? { red: true, baseY: y, amp: 55 + Math.random() * 70, freq: 2.2 + Math.random() * 1.8 }
-              : blue
-              ? { blue: true, baseY: y, amp: 40 + Math.random() * 55, freq: 1.2 + Math.random() * 1.1 }
-              : {}),
-          },
-        ];
+const count = [1, 1, 2, 2, 3][Math.floor(Math.random() * 5)];
+
+for (let i = 0; i < count; i++) {
+  const black = Math.random() < 0.12;
+
+  const size =
+    red
+      ? 26 + Math.random() * 14
+      : blue
+      ? 30 + Math.random() * 16
+      : 34 + Math.random() * 20;
+
+  const y = 30 + Math.random() * 210;
+
+  s.swirls.push({
+    id: s.nextId++,
+    x: W + 60 + i * (90 + Math.random() * 160),
+    y: y + (Math.random() - 0.5) * 80,
+    size,
+    phase: Math.random() * Math.PI * 2,
+    ...(black
+      ? { black: true }
+      : red
+      ? {
+          red: true,
+          baseY: y,
+          amp: 55 + Math.random() * 70,
+          freq: 2.2 + Math.random() * 1.8,
+        }
+      : blue
+      ? {
+          blue: true,
+          baseY: y,
+          amp: 40 + Math.random() * 55,
+          freq: 1.2 + Math.random() * 1.1,
+        }
+      : {}),
+  });
+}
         const spawnBoost = 1 - raceProgress * 0.55;
 
         s.swirlIn = intense
