@@ -193,8 +193,10 @@ function StrangePlant({
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          boxShadow: "var(--shadow-glow)",
-          mixBlendMode: "screen",
+        background: "#fff",
+        opacity: lightning,
+        zIndex: 999,
+        pointerEvents: "none",
         }}
       />
     </div>
@@ -1591,7 +1593,14 @@ function RunnerGame() {
           </div>
         </div>
       )}
-
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{
+        background: "#fff",
+        opacity: lightning,
+        zIndex: 999,
+      }}
+    />
     </div>
   );
 }
