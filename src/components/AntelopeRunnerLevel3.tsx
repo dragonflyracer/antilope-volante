@@ -395,6 +395,7 @@ function RunnerGame() {
     // Performance monitoring
     fpsFrames: 0,
     fpsElapsed: 0,
+    realFps: 60,
     lowFpsStreak: 0,
     analyserSkip: 0,
   });
@@ -658,6 +659,7 @@ function RunnerGame() {
       s.fpsElapsed += dt;
       if (s.fpsElapsed >= 1) {
         const fps = s.fpsFrames / s.fpsElapsed;
+        s.realFps = fps;
         s.fpsFrames = 0;
         s.fpsElapsed = 0;
         if (fps < 42) {
@@ -685,7 +687,7 @@ function RunnerGame() {
       s.scroll += bgSpeed * dt;
 
       if (deviceOk === null && s.t > 2) {
-        const ok = fps >= 45;
+        const ok = s.realFps >= 45;
         setDeviceOk(ok);
 
         if (!ok) {
