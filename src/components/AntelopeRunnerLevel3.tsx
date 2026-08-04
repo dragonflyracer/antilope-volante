@@ -364,6 +364,7 @@ function RunnerGame() {
   const [progress, setProgress] = useState(0);
   const [flash, setFlash] = useState(0);
   const [deviceOk, setDeviceOk] = useState<boolean | null>(null);
+  const [redirectMessage, setRedirectMessage] = useState(false);
 
   const g = useRef({
     y: 140,
@@ -691,7 +692,12 @@ function RunnerGame() {
         setDeviceOk(ok);
 
         if (!ok) {
-          window.location.href = "/jeu-2";
+          setRedirectMessage(true);
+
+          setTimeout(() => {
+            window.location.href = "/jeu-2";
+          }, 3000);
+
           return;
         }
       }
