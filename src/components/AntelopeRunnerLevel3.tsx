@@ -1470,76 +1470,101 @@ function RunnerGame() {
 
       <audio ref={audioRef} src={musicAsset.url} loop preload="auto" />
 
-      {/* Overlays */}
-      {phase !== "running" && (
-        <div
-          className={`absolute inset-0 grid place-items-center px-6 ${
-            phase === "idle"
-              ? "bg-background/55 backdrop-blur-[2px]"
-              : "bg-white"
-          }`}
-        >
-          <div className="hud-panel max-w-md rounded-3xl px-6 py-5 text-center sm:px-10 sm:py-7">
-            <h1 className="text-gradient-antelope text-2xl font-black tracking-tight sm:text-4xl">
-              {phase === "idle"
-                ? "Savanna Sprint"
-                : phase === "won"
-                ? "Ligne d'arrivée !"
-                : "Course terminée"}
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Score {score} · Record {best}
-            </p>
-            <Button
-              type="button"
-              size="lg"
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                start();
-              }}
-              className="mt-5 rounded-full px-7 py-3 text-sm font-bold uppercase tracking-[0.18em] transition-transform hover:scale-105 active:scale-95"
-              style={{ backgroundImage: "var(--gradient-antelope)", boxShadow: "var(--shadow-glow)" }}
-            >
-              {phase === "idle" ? "Galoper" : phase === "won" ? "Recourir" : "Rejouer"}
-            </Button>
+    {/* Overlays */}
+{(phase !== "running" || redirectMessage) && (
+  <div
+    className={`absolute inset-0 grid place-items-center px-6 ${
+      phase === "idle"
+        ? "bg-background/55 backdrop-blur-[2px]"
+        : "bg-white"
+    }`}
+  >
+    <div className="hud-panel max-w-md rounded-3xl px-6 py-5 text-center sm:px-10 sm:py-7">
 
-            {phase !== "idle" && (
-              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void shareScore();
-                  }}
-                  className="rounded-full border-primary bg-primary px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:scale-105 hover:bg-primary/90 active:scale-95"
-                >
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Partager le score
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigator.clipboard?.writeText(`${shareText} ${shareUrl}`);
-                  }}
-                  className="rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-foreground underline-offset-4 hover:bg-secondary hover:underline"
-                >
-                  Copier
-                </Button>
-              </div>
-            )}
+      {redirectMessage ? (
+        <>
+          <h1 className="text-gradient-antelope text-2xl font-black tracking-tight sm:text-4xl">
+            Appareil détecté
+          </h1>
 
-          </div>
-        </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Votre appareil semble avoir de la difficulté avec ce niveau.
+          </p>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            Redirection vers une version optimisée...
+          </p>
+        </>
+      ) : (
+        <>
+          <h1 className="text-gradient-antelope text-2xl font-black tracking-tight sm:text-4xl">
+            {phase === "idle"
+              ? "Savanna Sprint"
+              : phase === "won"
+              ? "Ligne d'arrivée !"
+              : "Course terminée"}
+          </h1>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            Score {score} · Record {best}
+          </p>
+
+          <Button
+            type="button"
+            size="lg"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              start();
+            }}
+            className="mt-5 rounded-full px-7 py-3 text-sm font-bold uppercase tracking-[0.18em] transition-transform hover:scale-105 active:scale-95"
+            style={{
+              backgroundImage: "var(--gradient-antelope)",
+              boxShadow: "var(--shadow-glow)",
+            }}
+          >
+            {phase === "idle"
+              ? "Galoper"
+              : phase === "won"
+              ? "Recourir"
+              : "Rejouer"}
+          </Button>
+
+          {phase !== "idle" && (
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  void shareScore();
+                }}
+                className="rounded-full border-primary bg-primary px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:scale-105 hover:bg-primary/90 active:scale-95"
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Partager le score
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard?.writeText(
+                    `${shareText} ${shareUrl}`
+                  );
+                }}
+                className="rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-foreground underline-offset-4 hover:bg-secondary hover:underline"
+              >
+                Copier
+              </Button>
+            </div>
+          )}
+        </>
       )}
 
-
-
     </div>
-  );
-}
+  </div>
+)}
