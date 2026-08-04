@@ -363,6 +363,7 @@ function RunnerGame() {
   const [quality, setQuality] = useState<Quality>(() => detectInitialQuality());
   const [progress, setProgress] = useState(0);
   const [flash, setFlash] = useState(0);
+  const [deviceOk, setDeviceOk] = useState<boolean | null>(null);
 
   const g = useRef({
     y: 140,
@@ -492,6 +493,7 @@ function RunnerGame() {
       lowFpsStreak: 0,
       analyserSkip: 0,
     };
+    setDeviceOk(null);
     setScore(0);
     setProgress(0);
     setY(0);
@@ -681,6 +683,16 @@ function RunnerGame() {
 
       const bgSpeed = s.phase === "running" ? s.speed : 90;
       s.scroll += bgSpeed * dt;
+
+      if (deviceOk === null && s.t > 2) {
+        const ok = fps >= 45;
+        setDeviceOk(ok);
+
+        if (!ok) {
+          window.location.href = "/jeu-2";
+          return;
+        }
+      }
 
       if (s.phase !== "running") {
         // Mise à jour visuelle minimale en idle/game-over
