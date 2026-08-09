@@ -1397,7 +1397,6 @@ function RunnerGame() {
           style={{
             height: "17%",
             backgroundPosition: "bottom",
-            filter: "saturate(1.1) brightness(0.95)",
           }}
         />
       </div>
