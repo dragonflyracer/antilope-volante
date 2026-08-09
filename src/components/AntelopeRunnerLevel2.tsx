@@ -1069,7 +1069,6 @@ function RunnerGame() {
             bottom: `calc(${((H - GROUND_Y) / H) * 100}% - 26px)`,
             height: "24%",
             backgroundPosition: "bottom",
-            filter: "saturate(1.05) brightness(1.02)",
           }}
         />
 
