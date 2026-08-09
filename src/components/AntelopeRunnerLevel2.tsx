@@ -29,9 +29,9 @@ type Quality = "high" | "medium" | "low";
 
 const QUALITY_LIMITS: Record<Quality, { maxParticles: number; maxSwirls: number; maxClouds: number; cloudPuffs: number; analyserSkip: number; blur: boolean }> = {
   // maxSwirls est identique partout : c'est du gameplay, pas de la décoration.
-  high:   { maxParticles: 55, maxSwirls: 7, maxClouds: 4, cloudPuffs: 26, analyserSkip: 1, blur: true },
-  medium: { maxParticles: 34, maxSwirls: 7, maxClouds: 3, cloudPuffs: 18, analyserSkip: 3, blur: true },
-  low:    { maxParticles: 20, maxSwirls: 7, maxClouds: 2, cloudPuffs: 12, analyserSkip: 5, blur: false },
+  high:   { maxParticles: 55, maxSwirls: 7, maxClouds: 4, cloudPuffs: 26, analyserSkip: 1},
+  medium: { maxParticles: 34, maxSwirls: 7, maxClouds: 3, cloudPuffs: 18, analyserSkip: 3 },
+  low:    { maxParticles: 20, maxSwirls: 7, maxClouds: 2, cloudPuffs: 12, analyserSkip: 5 },
 };
 
 function detectInitialQuality(): Quality {
