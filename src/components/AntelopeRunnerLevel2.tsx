@@ -1189,11 +1189,6 @@ function RunnerGame() {
                 aspectRatio: "1 / 1",
                 pointerEvents: "none",
                 willChange: "transform",
-                filter: sw.red
-                  ? "drop-shadow(0 0 18px oklch(0.65 0.25 27 / 85%))"
-                  : sw.blue
-                  ? "drop-shadow(0 0 14px oklch(0.75 0.19 240 / 80%))"
-                  : "drop-shadow(0 0 10px oklch(0.75 0.2 350 / 65%))",
               }}
             >
               <svg viewBox="0 0 100 100" className="h-full w-full overflow-visible">
