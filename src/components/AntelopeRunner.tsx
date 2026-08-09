@@ -1027,7 +1027,6 @@ function RunnerGame() {
             bottom: `${((H - GROUND_Y) / H) * 100 - 2}%`,
             height: "72%",
             backgroundPosition: "bottom",
-            filter: limits.blur ? "blur(3px) saturate(0.85) brightness(1.06)" : "saturate(0.85) brightness(1.06)",
             maskImage:
               "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
           }}
